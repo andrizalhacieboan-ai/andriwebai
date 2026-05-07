@@ -15,7 +15,6 @@
 <body>
   <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
-
   <aside class="sidebar" id="sidebar">
     <div class="side-top">
       <div class="side-brand">
@@ -51,7 +50,7 @@
         </svg>
       </div>
       <span class="side-user-name" id="sideUserName">Pengguna</span>
-      <button class="side-user-dots" type="button">
+      <button class="side-user-dots" id="sideUserDots" type="button">
         <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
           <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
         </svg>
@@ -123,6 +122,39 @@
       const sideClose = document.getElementById('sideClose');
       const sidebar = document.getElementById('sidebar');
       const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+      const sendBtn = document.getElementById('actionBtn');
+      const chatInput = document.getElementById('chatInput');
+      const heroSection = document.getElementById('hero');
+      const chatArea = document.getElementById('chatArea');
+      const chatWrap = document.getElementById('chatWrap');
+      const toast = document.getElementById('toast');
+      const toastText = document.getElementById('toastText');
+      const toastClose = document.getElementById('toastClose');
+      const newChatBtn = document.getElementById('newChatBtn');
+      const newChatTopBtn = document.getElementById('newChatTopBtn');
+      const sideUserDots = document.getElementById('sideUserDots');
+      const headerChatInfo = document.getElementById('headerChatInfo');
+      const headerChatTitle = document.getElementById('headerChatTitle');
+
+      let currentSessionId = null;
+      let isProcessing = false;
+
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      function showToast(message) {
+        toastText.textContent = message;
+        toast.classList.add('show');
+      }
+
+      function hideToast() {
+        toast.classList.remove('show');
+      }
+
+      toastClose.addEventListener('click', hideToast);
 
       const toggleSidebar = () => {
         sidebar.classList.toggle('open');
@@ -133,65 +165,89 @@
       sideClose.addEventListener('click', toggleSidebar);
       sidebarBackdrop.addEventListener('click', toggleSidebar);
 
-      const sendBtn = document.getElementById('actionBtn');
-      const chatInput = document.getElementById('chatInput');
-      const heroSection = document.getElementById('hero');
-      const chatArea = document.getElementById('chatArea');
-      const chatWrap = document.getElementById('chatWrap');
-      const toast = document.getElementById('toast');
-      const toastText = document.getElementById('toastText');
+      function resetChat() {
+        chatWrap.innerHTML = '';
+        heroSection.style.display = 'flex';
+        chatArea.style.display = 'none';
+        headerChatInfo.style.display = 'none';
+        currentSessionId = null;
+        chatInput.value = '';
+        chatInput.style.height = 'auto';
+        if (sidebar.classList.contains('open')) {
+          toggleSidebar();
+        }
+      }
 
-      let currentSessionId = null; // Menyimpan state sesi
+      newChatBtn.addEventListener('click', resetChat);
+      newChatTopBtn.addEventListener('click', resetChat);
+
+      sideUserDots.addEventListener('click', () => {
+        showToast('Model aktif: GLM-5-Turbo (GPT Endpoint)');
+      });
+
+      function scrollToBottom() {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      }
+
+      chatInput.addEventListener('input', () => {
+        chatInput.style.height = 'auto';
+        chatInput.style.height = Math.min(chatInput.scrollHeight, 150) + 'px';
+      });
 
       sendBtn.addEventListener('click', async () => {
         const text = chatInput.value.trim();
-        if(!text) return;
-        
+        if (!text || isProcessing) return;
+
+        isProcessing = true;
+        sendBtn.disabled = true;
+
         heroSection.style.display = 'none';
         chatArea.style.display = 'block';
+        headerChatInfo.style.display = 'flex';
+        headerChatTitle.textContent = 'Obrolan Baru';
 
-        // prompt user
         const userBubble = document.createElement('div');
         userBubble.className = 'chat-bubble user';
         userBubble.textContent = text;
         chatWrap.appendChild(userBubble);
         chatInput.value = '';
+        chatInput.style.height = 'auto';
 
-        // indikator loading
         const aiBubble = document.createElement('div');
         aiBubble.className = 'chat-bubble ai';
-        aiBubble.textContent = "Menghubungi backend...";
+        aiBubble.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
         chatWrap.appendChild(aiBubble);
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        scrollToBottom();
 
         try {
-            // Memanggil API backend (Gunakan /api/chat/gemini ATAU /api/chat/gpt)
-            const response = await fetch('/api/chat/gpt', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    message: text,
-                    sessionId: currentSessionId
-                })
-            });
-            
-            const data = await response.json();
+          const response = await fetch('/api/chat/gpt', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              message: text,
+              sessionId: currentSessionId
+            })
+          });
 
-            if (data.success) {
-                
-                aiBubble.innerHTML = data.text.replace(/\n/g, '<br>');
-                if(data.sessionId) currentSessionId = data.sessionId; // Simpan sesi
-            } else {
-                aiBubble.textContent = "Error: " + data.error;
-            }
-        } catch(err) {
-            aiBubble.textContent = "Gagal terhubung ke server,mungkin lagi maintenance.";
+          const data = await response.json();
+
+          if (data.success && data.text) {
+            aiBubble.innerHTML = escapeHtml(data.text).replace(/\n/g, '<br>');
+            if (data.sessionId) currentSessionId = data.sessionId;
+          } else {
+            aiBubble.innerHTML = '<span style="color:#d00;">Error: ' + escapeHtml(data.error || 'Tidak ada respons') + '</span>';
+          }
+        } catch (err) {
+          aiBubble.innerHTML = '<span style="color:#d00;">Gagal terhubung ke server.</span>';
         }
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+
+        scrollToBottom();
+        isProcessing = false;
+        sendBtn.disabled = false;
       });
 
       chatInput.addEventListener('keypress', (e) => {
-        if(e.key === 'Enter' && !e.shiftKey) {
+        if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();
           sendBtn.click();
         }
