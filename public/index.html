@@ -58,7 +58,6 @@
     </div>
   </aside>
 
-  
   <div class="main-wrapper">
     <header class="header">
       <div class="header-left">
@@ -93,7 +92,6 @@
       </section>
     </main>
 
-    
     <div class="chat-container">
       <div class="chat-input-wrapper">
         <div class="input-row">
@@ -122,39 +120,6 @@
       const sideClose = document.getElementById('sideClose');
       const sidebar = document.getElementById('sidebar');
       const sidebarBackdrop = document.getElementById('sidebarBackdrop');
-      const sendBtn = document.getElementById('actionBtn');
-      const chatInput = document.getElementById('chatInput');
-      const heroSection = document.getElementById('hero');
-      const chatArea = document.getElementById('chatArea');
-      const chatWrap = document.getElementById('chatWrap');
-      const toast = document.getElementById('toast');
-      const toastText = document.getElementById('toastText');
-      const toastClose = document.getElementById('toastClose');
-      const newChatBtn = document.getElementById('newChatBtn');
-      const newChatTopBtn = document.getElementById('newChatTopBtn');
-      const sideUserDots = document.getElementById('sideUserDots');
-      const headerChatInfo = document.getElementById('headerChatInfo');
-      const headerChatTitle = document.getElementById('headerChatTitle');
-
-      let currentSessionId = null;
-      let isProcessing = false;
-
-      function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-      }
-
-      function showToast(message) {
-        toastText.textContent = message;
-        toast.classList.add('show');
-      }
-
-      function hideToast() {
-        toast.classList.remove('show');
-      }
-
-      toastClose.addEventListener('click', hideToast);
 
       const toggleSidebar = () => {
         sidebar.classList.toggle('open');
@@ -165,46 +130,80 @@
       sideClose.addEventListener('click', toggleSidebar);
       sidebarBackdrop.addEventListener('click', toggleSidebar);
 
-      function resetChat() {
-        chatWrap.innerHTML = '';
-        heroSection.style.display = 'flex';
-        chatArea.style.display = 'none';
-        headerChatInfo.style.display = 'none';
-        currentSessionId = null;
-        chatInput.value = '';
-        chatInput.style.height = 'auto';
-        if (sidebar.classList.contains('open')) {
-          toggleSidebar();
-        }
+      const sendBtn = document.getElementById('actionBtn');
+      const chatInput = document.getElementById('chatInput');
+      const heroSection = document.getElementById('hero');
+      const chatArea = document.getElementById('chatArea');
+      const chatWrap = document.getElementById('chatWrap');
+      const toast = document.getElementById('toast');
+      const toastText = document.getElementById('toastText');
+      const headerChatInfo = document.getElementById('headerChatInfo');
+      const headerChatTitle = document.getElementById('headerChatTitle');
+      const newChatBtn = document.getElementById('newChatBtn');
+      const newChatTopBtn = document.getElementById('newChatTopBtn');
+      const sideUserDots = document.getElementById('sideUserDots');
+
+      let currentSessionId = null;
+      let isSending = false;
+
+      function showToast(message) {
+        toastText.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 3000);
       }
 
-      newChatBtn.addEventListener('click', resetChat);
-      newChatTopBtn.addEventListener('click', resetChat);
+      document.getElementById('toastClose').addEventListener('click', () => {
+        toast.classList.remove('show');
+      });
+
+      function newChat() {
+        heroSection.style.display = 'flex';
+        chatArea.style.display = 'none';
+        chatWrap.innerHTML = '';
+        currentSessionId = null;
+        headerChatInfo.style.display = 'none';
+        headerChatTitle.textContent = 'Obrolan Baru';
+        chatInput.value = '';
+        chatInput.style.height = 'auto';
+        sidebar.classList.remove('open');
+        sidebarBackdrop.classList.remove('active');
+      }
+
+      newChatBtn.addEventListener('click', newChat);
+      newChatTopBtn.addEventListener('click', newChat);
 
       sideUserDots.addEventListener('click', () => {
-        showToast('Model aktif: GLM-5-Turbo (GPT Endpoint)');
+        showToast('Fitur akun segera hadir');
       });
+
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
 
       function scrollToBottom() {
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
       }
 
-      chatInput.addEventListener('input', () => {
+      function autoResize() {
         chatInput.style.height = 'auto';
         chatInput.style.height = Math.min(chatInput.scrollHeight, 150) + 'px';
-      });
+      }
 
-      sendBtn.addEventListener('click', async () => {
+      chatInput.addEventListener('input', autoResize);
+
+      async function sendMessage() {
         const text = chatInput.value.trim();
-        if (!text || isProcessing) return;
+        if (!text || isSending) return;
 
-        isProcessing = true;
+        isSending = true;
         sendBtn.disabled = true;
 
         heroSection.style.display = 'none';
         chatArea.style.display = 'block';
-        headerChatInfo.style.display = 'flex';
-        headerChatTitle.textContent = 'Obrolan Baru';
 
         const userBubble = document.createElement('div');
         userBubble.className = 'chat-bubble user';
@@ -212,10 +211,19 @@
         chatWrap.appendChild(userBubble);
         chatInput.value = '';
         chatInput.style.height = 'auto';
+        scrollToBottom();
+
+        headerChatInfo.style.display = 'flex';
+        const shortTitle = text.length > 35 ? text.substring(0, 35) + '...' : text;
+        headerChatTitle.textContent = shortTitle;
 
         const aiBubble = document.createElement('div');
         aiBubble.className = 'chat-bubble ai';
-        aiBubble.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+
+        const loadingDots = document.createElement('span');
+        loadingDots.className = 'loading-dots';
+        loadingDots.innerHTML = '<span>.</span><span>.</span><span>.</span>';
+        aiBubble.appendChild(loadingDots);
         chatWrap.appendChild(aiBubble);
         scrollToBottom();
 
@@ -231,25 +239,36 @@
 
           const data = await response.json();
 
-          if (data.success && data.text) {
-            aiBubble.innerHTML = escapeHtml(data.text).replace(/\n/g, '<br>');
+          if (data.success) {
+            let aiText = data.text || '';
+            aiText = aiText.replace(/(([sS])*?)<//think>/gi, '');
+            aiText = aiText.trim();
+
+            if (aiText) {
+              aiBubble.innerHTML = escapeHtml(aiText).replace(/
+/g, '<br>');
+            } else {
+              aiBubble.textContent = 'Tidak ada respons.';
+            }
             if (data.sessionId) currentSessionId = data.sessionId;
           } else {
-            aiBubble.innerHTML = '<span style="color:#d00;">Error: ' + escapeHtml(data.error || 'Tidak ada respons') + '</span>';
+            aiBubble.textContent = 'Error: ' + (data.error || 'Terjadi kesalahan');
           }
         } catch (err) {
-          aiBubble.innerHTML = '<span style="color:#d00;">Gagal terhubung ke server.</span>';
+          aiBubble.textContent = 'Gagal terhubung ke server, mungkin lagi maintenance.';
         }
 
-        scrollToBottom();
-        isProcessing = false;
+        isSending = false;
         sendBtn.disabled = false;
-      });
+        scrollToBottom();
+      }
+
+      sendBtn.addEventListener('click', sendMessage);
 
       chatInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();
-          sendBtn.click();
+          sendMessage();
         }
       });
     });
