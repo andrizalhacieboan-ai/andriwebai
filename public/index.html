@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>ASM - AI BY ANDRI</title>
+  <meta name="theme-color" content="#FFA500">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+
+  <aside class="sidebar" id="sidebar">
+    <div class="side-top">
+      <div class="side-brand">
+        <img src="https://via.placeholder.com/32" class="side-logo-img" alt="ASM - AI" draggable="false">
+        <div class="side-title">ASM - AI</div>
+      </div>
+      <button class="side-close" id="sideClose" type="button" aria-label="Tutup sidebar">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="side-actions">
+      <button class="side-btn" id="newChatBtn" type="button">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+          <circle cx="12" cy="12" r="9"/>
+          <line x1="12" y1="8" x2="12" y2="16"/>
+          <line x1="8" y1="12" x2="16" y2="12"/>
+        </svg>
+        <span>Obrolan Baru</span>
+      </button>
+    </div>
+
+    <div class="side-history" id="sideHistory"></div>
+
+    <div class="side-user-row" id="sideUserRow">
+      <div class="side-user-avatar" id="sideUserAvatar">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path>
+        </svg>
+      </div>
+      <span class="side-user-name" id="sideUserName">Pengguna</span>
+      <button class="side-user-dots" type="button">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+          <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
+        </svg>
+      </button>
+    </div>
+  </aside>
+
+  
+  <div class="main-wrapper">
+    <header class="header">
+      <div class="header-left">
+        <div class="menu-btn" id="menuBtn">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+      <div class="header-chat-info" id="headerChatInfo" style="display:none;">
+        <div class="header-chat-title" id="headerChatTitle">Obrolan Baru</div>
+      </div>
+      <div class="header-right-actions">
+        <button class="new-chat-btn" id="newChatTopBtn" type="button">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" width="18" height="18">
+            <circle cx="12" cy="12" r="9"/>
+            <line x1="12" y1="8" x2="12" y2="16"/>
+            <line x1="8" y1="12" x2="16" y2="12"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <section class="welcome-section" id="hero">
+        <div class="logo-container">
+          <div class="logo" style="display:flex;align-items:center;justify-content:center;font-size:3rem;">⚡</div>
+          <span class="welcome-text" id="welcomeGreeting">ASM - AI, Tanya Aja.</span>
+        </div>
+      </section>
+
+      <section class="messages-container" id="chatArea" style="display:none;">
+        <div class="messages-inner" id="chatWrap"></div>
+      </section>
+    </main>
+
+    
+    <div class="chat-container">
+      <div class="chat-input-wrapper">
+        <div class="input-row">
+          <textarea class="chat-input" id="chatInput" placeholder="Ada Yang Saya Bisa Bantu Teman? " rows="1"></textarea>
+          <div class="right-actions">
+            <button class="send-btn" id="actionBtn" type="button" aria-label="Kirim">
+              <svg class="send-icon" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" width="20" height="20">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">
+    <span id="toastText"></span>
+    <button class="toast-close" id="toastClose">✕</button>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const menuBtn = document.getElementById('menuBtn');
+      const sideClose = document.getElementById('sideClose');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+      const toggleSidebar = () => {
+        sidebar.classList.toggle('open');
+        sidebarBackdrop.classList.toggle('active');
+      };
+
+      menuBtn.addEventListener('click', toggleSidebar);
+      sideClose.addEventListener('click', toggleSidebar);
+      sidebarBackdrop.addEventListener('click', toggleSidebar);
+
+      const sendBtn = document.getElementById('actionBtn');
+      const chatInput = document.getElementById('chatInput');
+      const heroSection = document.getElementById('hero');
+      const chatArea = document.getElementById('chatArea');
+      const chatWrap = document.getElementById('chatWrap');
+      const toast = document.getElementById('toast');
+      const toastText = document.getElementById('toastText');
+
+      let currentSessionId = null; // Menyimpan state sesi
+
+      sendBtn.addEventListener('click', async () => {
+        const text = chatInput.value.trim();
+        if(!text) return;
+        
+        heroSection.style.display = 'none';
+        chatArea.style.display = 'block';
+
+        // prompt user
+        const userBubble = document.createElement('div');
+        userBubble.className = 'chat-bubble user';
+        userBubble.textContent = text;
+        chatWrap.appendChild(userBubble);
+        chatInput.value = '';
+
+        // indikator loading
+        const aiBubble = document.createElement('div');
+        aiBubble.className = 'chat-bubble ai';
+        aiBubble.textContent = "Menghubungi backend...";
+        chatWrap.appendChild(aiBubble);
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+
+        try {
+            // Memanggil API backend (Gunakan /api/chat/gemini ATAU /api/chat/gpt)
+            const response = await fetch('/api/chat/gemini', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    message: text,
+                    sessionId: currentSessionId
+                })
+            });
+            
+            const data = await response.json();
+
+            if (data.success) {
+                
+                aiBubble.innerHTML = data.text.replace(/\n/g, '<br>');
+                if(data.sessionId) currentSessionId = data.sessionId; // Simpan sesi
+            } else {
+                aiBubble.textContent = "Error: " + data.error;
+            }
+        } catch(err) {
+            aiBubble.textContent = "Gagal terhubung ke server,mungkin lagi maintenance.";
+        }
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      });
+
+      chatInput.addEventListener('keypress', (e) => {
+        if(e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendBtn.click();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
