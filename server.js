@@ -3,7 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import { ZAi } from './lib/ZAi.js';
+import { ZAi } from '/ZAi.js';
 import gemini from './lib/gemini.js';
 
 const __filename = fileURLToPath(import.meta.url);
