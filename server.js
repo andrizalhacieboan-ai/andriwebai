@@ -3,7 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import { ZAi } from 'ZAi.js';
+import glm5 from './lib/glm5.js';
 import gemini from './lib/gemini.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -21,7 +21,7 @@ app.post('/api/chat/gpt', async (req, res) => {
         const { message } = req.body;
         if (!message) return res.status(400).json({ success: false, error: 'Message is required' });
         
-        const responseText = await ZAi(message);
+        const responseText = await glm5(message);
         res.json({ success: true, text: responseText });
     } catch (error) {
         console.error('GLM-5 Error:', error);
