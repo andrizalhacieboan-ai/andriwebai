@@ -3,7 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import glm5 from './lib/glm5.js';
+import glm5 from './lib/ZAi.js';
 import gemini from './lib/gemini.js';
 
 const __filename = fileURLToPath(import.meta.url);
