@@ -95,7 +95,7 @@
     <div class="chat-container">
       <div class="chat-input-wrapper">
         <div class="input-row">
-          <textarea class="chat-input" id="chatInput" placeholder="Ada Yang Saya Bisa Bantu Teman? " rows="1"></textarea>
+          <textarea class="chat-input" id="chatInput" placeholder="Ada Yang Saya Bisa Bantu? " rows="1"></textarea>
           <div class="right-actions">
             <button class="send-btn" id="actionBtn" type="button" aria-label="Kirim">
               <svg class="send-icon" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" width="20" height="20">
@@ -195,6 +195,16 @@
 
       chatInput.addEventListener('input', autoResize);
 
+      function cleanThinkingTags(str) {
+        return str.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+      }
+
+      function formatAiText(str) {
+        let cleaned = cleanThinkingTags(str);
+        let escaped = escapeHtml(cleaned);
+        return escaped.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+      }
+
       async function sendMessage() {
         const text = chatInput.value.trim();
         if (!text || isSending) return;
@@ -241,12 +251,10 @@
 
           if (data.success) {
             let aiText = data.text || '';
-            aiText = aiText.replace(/(([sS])*?)<//think>/gi, '');
-            aiText = aiText.trim();
+            let formatted = formatAiText(aiText);
 
-            if (aiText) {
-              aiBubble.innerHTML = escapeHtml(aiText).replace(/
-/g, '<br>');
+            if (formatted) {
+              aiBubble.innerHTML = formatted;
             } else {
               aiBubble.textContent = 'Tidak ada respons.';
             }
