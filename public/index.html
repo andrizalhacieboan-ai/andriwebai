@@ -75,12 +75,6 @@
         <div class="logo-container">
           <div class="logo">⚡</div>
           <span class="welcome-text">ASM - AI, Tanya Aja.</span>
-          <div class="ai-cards">
-            <div class="ai-card active" data-model="glm-5">GLM-5 (Z.AI)</div>
-            <div class="ai-card" data-model="gemini">Gemini</div>
-            <div class="ai-card" data-model="deepseek">Deepseek</div>
-            <div class="ai-card" data-model="gpt">GPT</div>
-          </div>
         </div>
       </section>
 
@@ -105,7 +99,7 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
           </button>
           <div id="filePreview" class="file-preview" style="display:none;"></div>
-          <textarea class="chat-input" id="chatInput" placeholder="Ada Yang Saya Bisa Bantu Teman?" rows="1"></textarea>
+          <textarea class="chat-input" id="chatInput" placeholder="You Send a Messgae" rows="1"></textarea>
           <div class="right-actions">
             <button class="send-btn" id="actionBtn" type="button" aria-label="Kirim">
               <svg class="send-icon" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" width="20" height="20">
@@ -263,7 +257,7 @@
 
       function triggerNotify(title, body) {
         if (settings.notifications && Notification.permission === 'granted') {
-          new Notification(title, { body, icon: '⚡' });
+          new Notification(title, { body: body, icon: '⚡' });
         }
       }
 
@@ -403,28 +397,6 @@
         }
       });
 
-      document.querySelectorAll('.ai-card').forEach(card => {
-        card.addEventListener('click', () => {
-          document.querySelectorAll('.ai-card').forEach(c => c.classList.remove('active'));
-          card.classList.add('active');
-          modelSelect.value = card.dataset.model;
-        });
-      });
-
-      modelSelect.addEventListener('change', () => {
-        document.querySelectorAll('.ai-card').forEach(c => {
-          c.classList.toggle('active', c.dataset.model === modelSelect.value);
-        });
-        if(activeChatId) {
-          const chat = chats.find(c => c.id === activeChatId);
-          if(chat) {
-            chat.model = modelSelect.value;
-            saveChats();
-            headerChatModel.textContent = modelNames[modelSelect.value];
-          }
-        }
-      });
-
       attachBtn.addEventListener('click', () => fileInput.click());
 
       fileInput.addEventListener('change', (e) => {
@@ -487,7 +459,7 @@
           if (attachedFileData.type === 'image') {
             finalText = `[Gambar terlampir: ${attachedFileData.name}]\nBase64 Data: ${attachedFileData.content.substring(0, 100)}...\n\n${text}`;
           } else {
-            finalText = `[File terlampir: ${attachedFileData.name}]\n```\n${attachedFileData.content.substring(0, 2000)}\n```\n\n${text}`;
+            finalText = `[File terlampir: ${attachedFileData.name}]\n\`\`\`\n${attachedFileData.content.substring(0, 2000)}\n\`\`\`\n\n${text}`;
           }
           removeFile();
         }
@@ -552,7 +524,7 @@
 
           if (data.success) {
             let aiText = data.text || '';
-            let cleaned = aiText.replace(/ Raven[\s\S]*? Raven>/gi, '').trim();
+            let cleaned = aiText.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
             let formatted = escapeHtml(cleaned).replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
             
             if (formatted) {
