@@ -45,13 +45,21 @@ app.post('/api/chat/gemini', async (req, res) => {
 
 app.post('/api/chat/dolphin', async (req, res) => {
     try {
-        const { messages, template } = req.body;
+        const { message, messages, template } = req.body;
 
-        if (!messages || !Array.isArray(messages)) {
-            return res.status(400).json({ success: false, error: 'Messages array is required' });
+        let chatMessages = messages;
+
+        // Fallback: Jika Frontend mengirim format string "message" (seperti API lain), 
+        // otomatis ubah menjadi format "messages" array yang diminta DolphinAI
+        if (!chatMessages && message) {
+            chatMessages = [{ role: 'user', content: String(message) }];
         }
 
-        const responseText = await dolphinai({ messages, template });
+        if (!chatMessages  !Array.isArray(chatMessages)  chatMessages.length === 0) {
+            return res.status(400).json({ success: false, error: 'Messages array or message string is required' });
+        }
+
+        const responseText = await dolphinai({ messages: chatMessages, template });
         res.json({ success: true, text: responseText });
     } catch (error) {
         console.error('DolphinAI Error:', error);
