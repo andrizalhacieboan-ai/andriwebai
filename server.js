@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 
 import glm5 from './lib/glm5.js';
 import gemini from './lib/gemini.js';
-import chatgptInit from './lib/chatgptinit.js';
+import chatgptInit from './lib/chatgptInit.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
