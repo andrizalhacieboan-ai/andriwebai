@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css">
+  <!-- Prism.js untuk Syntax Highlighting Kode -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
 </head>
 <body>
   <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
@@ -164,11 +166,19 @@
         <button class="modal-close-btn" id="closeHistory">✕</button>
       </div>
       <div class="modal-body">
-        <button class="full-btn danger" id="shareHistoryBtn">Bagikan Semua Riwayat</button>
+        <button class="full-btn primary" id="shareHistoryBtn">Bagikan Semua Riwayat</button>
         <button class="full-btn danger-outline" id="deleteHistoryBtn">Hapus Semua Riwayat</button>
       </div>
     </div>
   </div>
+
+  <!-- Prism.js Script untuk Warna Kode -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -211,7 +221,7 @@
       let settings = JSON.parse(localStorage.getItem('asm_settings') || '{"notifications":false}');
 
       const apiMap = {
-        'glm-5': '/api/chat/glm5',
+        'glm-5': '/api/chat/gpt',
         'gemini': '/api/chat/gemini',
         'deepseek': '/api/chat/deepseek',
         'gpt': '/api/chat/gpt', 
@@ -269,6 +279,41 @@
         div.textContent = text;
         return div.innerHTML;
       }
+
+      // Format teks AI menjadi HTML (Mendukung Blok Kode & Tebal)
+      function formatAIText(rawText) {
+        let safe = escapeHtml(rawText);
+        // Format blok kode ```bahasa ... ```
+        safe = safe.replace(/&#x60;&#x60;&#x60;(\w*)\n([\s\S]*?)&#x60;&#x60;&#x60;/g, (match, lang, code) => {
+          const language = lang || 'plaintext';
+          return `<div class="code-block-wrapper"><div class="code-block-header"><span>${language}</span><button class="copy-code-btn" onclick="copyCodeBlock(this)">Copy</button></div><pre><code class="language-${language}">${code.trim()}</code></pre></div>`;
+        });
+        // Format tebal **teks**
+        safe = safe.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        // Format baris baru
+        safe = safe.replace(/\n/g, '<br>');
+        return safe;
+      }
+
+      // Fungsi Copy untuk Bubble Chat
+      function copyBubbleText(button, text) {
+        navigator.clipboard.writeText(text).then(() => {
+          const originalText = button.innerHTML;
+          button.innerHTML = '✓';
+          setTimeout(() => { button.innerHTML = originalText; }, 1500);
+          showToast('Teks berhasil disalin');
+        });
+      }
+
+      // Fungsi Copy untuk Blok Kode
+      window.copyCodeBlock = function(button) {
+        const codeBlock = button.closest('.code-block-wrapper').querySelector('code');
+        const text = codeBlock.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          button.textContent = 'Copied!';
+          setTimeout(() => { button.textContent = 'Copy'; }, 1500);
+        });
+      };
 
       function scrollToBottom() {
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
@@ -339,14 +384,27 @@
         chatWrap.innerHTML = '';
 
         chat.messages.forEach(msg => {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'chat-bubble-wrapper';
+          
           const bubble = document.createElement('div');
           bubble.className = `chat-bubble ${msg.role}`;
+          
+          const copyBtn = document.createElement('button');
+          copyBtn.className = 'copy-bubble-btn';
+          copyBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+          copyBtn.onclick = () => copyBubbleText(copyBtn, msg.content);
+
           if (msg.role === 'user') {
             bubble.textContent = msg.content;
           } else {
-            bubble.innerHTML = escapeHtml(msg.content).replace(/\n/g, '<br>');
+            bubble.innerHTML = formatAIText(msg.content);
+            if(window.Prism) Prism.highlightAllUnder(bubble);
           }
-          chatWrap.appendChild(bubble);
+
+          wrapper.appendChild(bubble);
+          wrapper.appendChild(copyBtn);
+          chatWrap.appendChild(wrapper);
         });
 
         scrollToBottom();
@@ -370,7 +428,12 @@
           const role = msg.role === 'user' ? 'Kamu' : 'AI';
           text += `[${role}]:\n${msg.content}\n\n`;
         });
-        navigator.clipboard.writeText(text).then(() => showToast('Riwayat disalin ke clipboard'));
+
+        if (navigator.share) {
+          navigator.share({ title: `ASM AI - ${chat.title}`, text: text }).catch(err => console.log(err));
+        } else {
+          navigator.clipboard.writeText(text).then(() => showToast('Riwayat disalin ke clipboard'));
+        }
       }
 
       document.getElementById('shareHistoryBtn').addEventListener('click', () => {
@@ -383,10 +446,15 @@
           });
           allText += '\n';
         });
-        navigator.clipboard.writeText(allText).then(() => {
-          showToast('Semua riwayat berhasil disalin');
-          closeModal('historyBackdrop');
-        });
+        
+        if (navigator.share) {
+          navigator.share({ title: 'Semua Riwayat ASM AI', text: allText }).catch(err => console.log(err));
+        } else {
+          navigator.clipboard.writeText(allText).then(() => {
+            showToast('Semua riwayat berhasil disalin');
+            closeModal('historyBackdrop');
+          });
+        }
       });
 
       document.getElementById('deleteHistoryBtn').addEventListener('click', () => {
@@ -490,22 +558,34 @@
         currentChat.messages.push({ role: 'user', content: finalText });
         saveChats();
 
+        const userWrapper = document.createElement('div');
+        userWrapper.className = 'chat-bubble-wrapper';
         const userBubble = document.createElement('div');
         userBubble.className = 'chat-bubble user';
         userBubble.textContent = text || 'Mengirim file...';
-        chatWrap.appendChild(userBubble);
+        const userCopyBtn = document.createElement('button');
+        userCopyBtn.className = 'copy-bubble-btn';
+        userCopyBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+        userCopyBtn.onclick = () => copyBubbleText(userCopyBtn, finalText);
+        
+        userWrapper.appendChild(userBubble);
+        userWrapper.appendChild(userCopyBtn);
+        chatWrap.appendChild(userWrapper);
         
         chatInput.value = '';
         chatInput.style.height = 'auto';
         scrollToBottom();
 
+        const aiWrapper = document.createElement('div');
+        aiWrapper.className = 'chat-bubble-wrapper';
         const aiBubble = document.createElement('div');
         aiBubble.className = 'chat-bubble ai';
         const loadingDots = document.createElement('span');
         loadingDots.className = 'loading-dots';
         loadingDots.innerHTML = '<span>.</span><span>.</span><span>.</span>';
         aiBubble.appendChild(loadingDots);
-        chatWrap.appendChild(aiBubble);
+        aiWrapper.appendChild(aiBubble);
+        chatWrap.appendChild(aiWrapper);
         scrollToBottom();
 
         const startTime = Date.now();
@@ -527,16 +607,17 @@
 
           if (data.success) {
             let aiText = data.text || '';
-            let cleaned = aiText.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
-            let formatted = escapeHtml(cleaned).replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+            let cleaned = aiText.replace(/<think[\s\S]*?<\/think>/gi, '').trim();
+            aiBubble.innerHTML = formatAIText(cleaned);
+            if(window.Prism) Prism.highlightAllUnder(aiBubble);
             
-            if (formatted) {
-              aiBubble.innerHTML = formatted;
-              currentChat.messages.push({ role: 'ai', content: cleaned });
-            } else {
-              aiBubble.textContent = 'Tidak ada respons.';
-              currentChat.messages.push({ role: 'ai', content: 'Tidak ada respons.' });
-            }
+            const aiCopyBtn = document.createElement('button');
+            aiCopyBtn.className = 'copy-bubble-btn';
+            aiCopyBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+            aiCopyBtn.onclick = () => copyBubbleText(aiCopyBtn, cleaned);
+            aiWrapper.appendChild(aiCopyBtn);
+
+            currentChat.messages.push({ role: 'ai', content: cleaned });
           } else {
             aiBubble.textContent = 'Error: ' + (data.error || 'Terjadi kesalahan');
             currentChat.messages.push({ role: 'ai', content: 'Error: ' + data.error });
