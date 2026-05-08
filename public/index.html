@@ -5,11 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>ASM - AI BY ANDRI</title>
   <meta name="theme-color" content="#FFA500">
-  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
-  
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
@@ -18,7 +16,7 @@
   <aside class="sidebar" id="sidebar">
     <div class="side-top">
       <div class="side-brand">
-        <img src="https://via.placeholder.com/32" class="side-logo-img" alt="ASM - AI" draggable="false">
+        <div class="side-logo-img">⚡</div>
         <div class="side-title">ASM - AI</div>
       </div>
       <button class="side-close" id="sideClose" type="button" aria-label="Tutup sidebar">
@@ -32,9 +30,7 @@
     <div class="side-actions">
       <button class="side-btn" id="newChatBtn" type="button">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
-          <circle cx="12" cy="12" r="9"/>
-          <line x1="12" y1="8" x2="12" y2="16"/>
-          <line x1="8" y1="12" x2="16" y2="12"/>
+          <circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
         </svg>
         <span>Obrolan Baru</span>
       </button>
@@ -42,18 +38,14 @@
 
     <div class="side-history" id="sideHistory"></div>
 
-    <div class="side-user-row" id="sideUserRow">
-      <div class="side-user-avatar" id="sideUserAvatar">
-        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20">
-          <circle cx="12" cy="8" r="4"></circle>
-          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path>
-        </svg>
-      </div>
-      <span class="side-user-name" id="sideUserName">Pengguna</span>
-      <button class="side-user-dots" id="sideUserDots" type="button">
-        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-          <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
-        </svg>
+    <div class="side-bottom-menu">
+      <button class="side-bottom-btn" id="settingsBtn" type="button">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span>Pengaturan</span>
+      </button>
+      <button class="side-bottom-btn" id="aboutBtn" type="button">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <span>Tentang</span>
       </button>
     </div>
   </aside>
@@ -67,13 +59,12 @@
       </div>
       <div class="header-chat-info" id="headerChatInfo" style="display:none;">
         <div class="header-chat-title" id="headerChatTitle">Obrolan Baru</div>
+        <div class="header-chat-model" id="headerChatModel">GLM-5</div>
       </div>
       <div class="header-right-actions">
         <button class="new-chat-btn" id="newChatTopBtn" type="button">
           <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" width="18" height="18">
-            <circle cx="12" cy="12" r="9"/>
-            <line x1="12" y1="8" x2="12" y2="16"/>
-            <line x1="8" y1="12" x2="16" y2="12"/>
+            <circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
           </svg>
         </button>
       </div>
@@ -82,8 +73,14 @@
     <main class="main-content">
       <section class="welcome-section" id="hero">
         <div class="logo-container">
-          <div class="logo" style="display:flex;align-items:center;justify-content:center;font-size:3rem;">⚡</div>
-          <span class="welcome-text" id="welcomeGreeting">ASM - AI, Tanya Aja.</span>
+          <div class="logo">⚡</div>
+          <span class="welcome-text">ASM - AI, Tanya Aja.</span>
+          <div class="ai-cards">
+            <div class="ai-card active" data-model="glm-5">GLM-5 (Z.AI)</div>
+            <div class="ai-card" data-model="gemini">Gemini</div>
+            <div class="ai-card" data-model="deepseek">Deepseek</div>
+            <div class="ai-card" data-model="gpt">GPT</div>
+          </div>
         </div>
       </section>
 
@@ -94,8 +91,21 @@
 
     <div class="chat-container">
       <div class="chat-input-wrapper">
+        <div class="input-top-row">
+          <select id="modelSelect" class="model-select">
+            <option value="glm-5">GLM-5 (Z.AI)</option>
+            <option value="gemini">Gemini</option>
+            <option value="deepseek">Deepseek</option>
+            <option value="gpt">GPT</option>
+          </select>
+        </div>
         <div class="input-row">
-          <textarea class="chat-input" id="chatInput" placeholder="Ada Yang Saya Bisa Bantu? " rows="1"></textarea>
+          <input type="file" id="fileInput" hidden accept=".txt,.pdf,.png,.jpg,.jpeg,.js,.py,.json">
+          <button class="attach-btn" id="attachBtn" type="button" title="Upload File">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+          </button>
+          <div id="filePreview" class="file-preview" style="display:none;"></div>
+          <textarea class="chat-input" id="chatInput" placeholder="Ada Yang Saya Bisa Bantu Teman?" rows="1"></textarea>
           <div class="right-actions">
             <button class="send-btn" id="actionBtn" type="button" aria-label="Kirim">
               <svg class="send-icon" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" width="20" height="20">
@@ -114,12 +124,64 @@
     <button class="toast-close" id="toastClose">✕</button>
   </div>
 
+  <div class="modal-backdrop" id="settingsBackdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span>Pengaturan</span>
+        <button class="modal-close-btn" id="closeSettings">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="setting-item">
+          <span>Aktifkan Notifikasi</span>
+          <label class="switch">
+            <input type="checkbox" id="notifToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <p class="setting-desc">Terima notifikasi browser saat AI selesai menjawab pertanyaan panjang.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="aboutBackdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span>Tentang ASM AI</span>
+        <button class="modal-close-btn" id="closeAbout">✕</button>
+      </div>
+      <div class="modal-body about-body">
+        <div class="about-logo">⚡</div>
+        <h2>ASM - AI BY ANDRI</h2>
+        <p>Multi-Model AI Chatbot Interface. Menggabungkan kecerdasan berbagai model AI terbaik di satu tempat.</p>
+        <div class="about-links">
+          <a href="https://instagram.com/andrizalhacieboan" target="_blank" class="about-link-btn">Instagram</a>
+          <a href="mailto:andrizalhacieboan@gmail.com" target="_blank" class="about-link-btn">Email</a>
+        </div>
+        <p class="about-copy">&copy; 2024 Andrizal Hacieboan. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="historyBackdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span>Riwayat Obrolan</span>
+        <button class="modal-close-btn" id="closeHistory">✕</button>
+      </div>
+      <div class="modal-body">
+        <button class="full-btn danger" id="shareHistoryBtn">Bagikan Semua Riwayat</button>
+        <button class="full-btn danger-outline" id="deleteHistoryBtn">Hapus Semua Riwayat</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const menuBtn = document.getElementById('menuBtn');
       const sideClose = document.getElementById('sideClose');
       const sidebar = document.getElementById('sidebar');
       const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+      const sideHistory = document.getElementById('sideHistory');
 
       const toggleSidebar = () => {
         sidebar.classList.toggle('open');
@@ -139,44 +201,71 @@
       const toastText = document.getElementById('toastText');
       const headerChatInfo = document.getElementById('headerChatInfo');
       const headerChatTitle = document.getElementById('headerChatTitle');
+      const headerChatModel = document.getElementById('headerChatModel');
       const newChatBtn = document.getElementById('newChatBtn');
       const newChatTopBtn = document.getElementById('newChatTopBtn');
-      const sideUserDots = document.getElementById('sideUserDots');
+      const modelSelect = document.getElementById('modelSelect');
+      const fileInput = document.getElementById('fileInput');
+      const attachBtn = document.getElementById('attachBtn');
+      const filePreview = document.getElementById('filePreview');
 
-      let currentSessionId = null;
+      let activeChatId = null;
       let isSending = false;
+      let attachedFileData = null;
+      let chats = JSON.parse(localStorage.getItem('asm_chats') || '[]');
+      let settings = JSON.parse(localStorage.getItem('asm_settings') || '{"notifications":false}');
+
+      const apiMap = {
+        'glm-5': '/api/chat/gpt',
+        'gemini': '/api/chat/gemini',
+        'deepseek': '/api/chat/gemini',
+        'gpt': '/api/chat/gpt'
+      };
+
+      const modelNames = {
+        'glm-5': 'GLM-5',
+        'gemini': 'Gemini',
+        'deepseek': 'Deepseek',
+        'gpt': 'GPT'
+      };
+
+      document.getElementById('notifToggle').checked = settings.notifications;
 
       function showToast(message) {
         toastText.textContent = message;
         toast.classList.add('show');
-        setTimeout(() => {
-          toast.classList.remove('show');
-        }, 3000);
+        setTimeout(() => toast.classList.remove('show'), 3000);
       }
 
-      document.getElementById('toastClose').addEventListener('click', () => {
-        toast.classList.remove('show');
+      document.getElementById('toastClose').addEventListener('click', () => toast.classList.remove('show'));
+
+      function openModal(id) { document.getElementById(id).classList.add('active'); }
+      function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+      document.getElementById('settingsBtn').addEventListener('click', () => openModal('settingsBackdrop'));
+      document.getElementById('aboutBtn').addEventListener('click', () => openModal('aboutBackdrop'));
+      document.getElementById('closeSettings').addEventListener('click', () => closeModal('settingsBackdrop'));
+      document.getElementById('closeAbout').addEventListener('click', () => closeModal('aboutBackdrop'));
+      document.getElementById('closeHistory').addEventListener('click', () => closeModal('historyBackdrop'));
+
+      document.querySelectorAll('.modal-backdrop').forEach(el => {
+        el.addEventListener('click', (e) => { if (e.target === el) el.classList.remove('active'); });
       });
 
-      function newChat() {
-        heroSection.style.display = 'flex';
-        chatArea.style.display = 'none';
-        chatWrap.innerHTML = '';
-        currentSessionId = null;
-        headerChatInfo.style.display = 'none';
-        headerChatTitle.textContent = 'Obrolan Baru';
-        chatInput.value = '';
-        chatInput.style.height = 'auto';
-        sidebar.classList.remove('open');
-        sidebarBackdrop.classList.remove('active');
+      document.getElementById('notifToggle').addEventListener('change', (e) => {
+        settings.notifications = e.target.checked;
+        localStorage.setItem('asm_settings', JSON.stringify(settings));
+        if (e.target.checked && Notification.permission !== 'granted') {
+          Notification.requestPermission();
+        }
+        showToast('Pengaturan notifikasi disimpan');
+      });
+
+      function triggerNotify(title, body) {
+        if (settings.notifications && Notification.permission === 'granted') {
+          new Notification(title, { body, icon: '⚡' });
+        }
       }
-
-      newChatBtn.addEventListener('click', newChat);
-      newChatTopBtn.addEventListener('click', newChat);
-
-      sideUserDots.addEventListener('click', () => {
-        showToast('Fitur akun segera hadir');
-      });
 
       function escapeHtml(text) {
         const div = document.createElement('div');
@@ -195,41 +284,248 @@
 
       chatInput.addEventListener('input', autoResize);
 
-      function cleanThinkingTags(str) {
-        return str.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+      function saveChats() {
+        localStorage.setItem('asm_chats', JSON.stringify(chats));
       }
 
-      function formatAiText(str) {
-        let cleaned = cleanThinkingTags(str);
-        let escaped = escapeHtml(cleaned);
-        return escaped.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+      function renderHistory() {
+        sideHistory.innerHTML = '';
+        const reversed = [...chats].reverse();
+        reversed.forEach(chat => {
+          const item = document.createElement('div');
+          item.className = `history-item ${chat.id === activeChatId ? 'active' : ''}`;
+          
+          const text = document.createElement('span');
+          text.className = 'history-text';
+          text.textContent = chat.title || 'Obrolan Baru';
+          text.addEventListener('click', () => loadChat(chat.id));
+
+          const actions = document.createElement('div');
+          actions.className = 'history-actions';
+
+          const shareBtn = document.createElement('button');
+          shareBtn.className = 'hist-act-btn';
+          shareBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>';
+          shareBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            shareChat(chat.id);
+          });
+
+          const delBtn = document.createElement('button');
+          delBtn.className = 'hist-act-btn del';
+          delBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+          delBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteChat(chat.id);
+          });
+
+          actions.appendChild(shareBtn);
+          actions.appendChild(delBtn);
+          item.appendChild(text);
+          item.appendChild(actions);
+          sideHistory.appendChild(item);
+        });
       }
+
+      function loadChat(id) {
+        const chat = chats.find(c => c.id === id);
+        if (!chat) return;
+        
+        activeChatId = id;
+        modelSelect.value = chat.model;
+        headerChatInfo.style.display = 'flex';
+        headerChatTitle.textContent = chat.title;
+        headerChatModel.textContent = modelNames[chat.model];
+
+        heroSection.style.display = 'none';
+        chatArea.style.display = 'block';
+        chatWrap.innerHTML = '';
+
+        chat.messages.forEach(msg => {
+          const bubble = document.createElement('div');
+          bubble.className = `chat-bubble ${msg.role}`;
+          if (msg.role === 'user') {
+            bubble.textContent = msg.content;
+          } else {
+            bubble.innerHTML = escapeHtml(msg.content).replace(/\n/g, '<br>');
+          }
+          chatWrap.appendChild(bubble);
+        });
+
+        scrollToBottom();
+        toggleSidebar();
+        renderHistory();
+      }
+
+      function deleteChat(id) {
+        chats = chats.filter(c => c.id !== id);
+        saveChats();
+        if (activeChatId === id) newChat();
+        renderHistory();
+        showToast('Riwayat dihapus');
+      }
+
+      function shareChat(id) {
+        const chat = chats.find(c => c.id === id);
+        if (!chat) return;
+        let text = `ASM AI - ${chat.title}\nModel: ${modelNames[chat.model]}\n\n`;
+        chat.messages.forEach(msg => {
+          const role = msg.role === 'user' ? 'Kamu' : 'AI';
+          text += `[${role}]:\n${msg.content}\n\n`;
+        });
+        navigator.clipboard.writeText(text).then(() => showToast('Riwayat disalin ke clipboard'));
+      }
+
+      document.getElementById('shareHistoryBtn').addEventListener('click', () => {
+        let allText = 'SEMUA RIWAYAT ASM AI\n\n';
+        chats.forEach(chat => {
+          allText += `--- ${chat.title} (${modelNames[chat.model]}) ---\n`;
+          chat.messages.forEach(msg => {
+            const role = msg.role === 'user' ? 'Kamu' : 'AI';
+            allText += `[${role}]: ${msg.content}\n`;
+          });
+          allText += '\n';
+        });
+        navigator.clipboard.writeText(allText).then(() => {
+          showToast('Semua riwayat berhasil disalin');
+          closeModal('historyBackdrop');
+        });
+      });
+
+      document.getElementById('deleteHistoryBtn').addEventListener('click', () => {
+        if(confirm('Yakin ingin menghapus semua riwayat?')) {
+          chats = [];
+          saveChats();
+          newChat();
+          renderHistory();
+          closeModal('historyBackdrop');
+          showToast('Semua riwayat terhapus');
+        }
+      });
+
+      document.querySelectorAll('.ai-card').forEach(card => {
+        card.addEventListener('click', () => {
+          document.querySelectorAll('.ai-card').forEach(c => c.classList.remove('active'));
+          card.classList.add('active');
+          modelSelect.value = card.dataset.model;
+        });
+      });
+
+      modelSelect.addEventListener('change', () => {
+        document.querySelectorAll('.ai-card').forEach(c => {
+          c.classList.toggle('active', c.dataset.model === modelSelect.value);
+        });
+        if(activeChatId) {
+          const chat = chats.find(c => c.id === activeChatId);
+          if(chat) {
+            chat.model = modelSelect.value;
+            saveChats();
+            headerChatModel.textContent = modelNames[modelSelect.value];
+          }
+        }
+      });
+
+      attachBtn.addEventListener('click', () => fileInput.click());
+
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        filePreview.style.display = 'flex';
+        
+        if (file.type.startsWith('image/')) {
+          reader.onload = (ev) => {
+            attachedFileData = { name: file.name, type: 'image', content: ev.target.result };
+            filePreview.innerHTML = `<span>📷 ${file.name}</span><button class="remove-file" id="removeFile">✕</button>`;
+            document.getElementById('removeFile').addEventListener('click', removeFile);
+          };
+          reader.readAsDataURL(file);
+        } else {
+          reader.onload = (ev) => {
+            attachedFileData = { name: file.name, type: 'text', content: ev.target.result };
+            filePreview.innerHTML = `<span>📄 ${file.name}</span><button class="remove-file" id="removeFile">✕</button>`;
+            document.getElementById('removeFile').addEventListener('click', removeFile);
+          };
+          reader.readAsText(file);
+        }
+      });
+
+      function removeFile() {
+        attachedFileData = null;
+        fileInput.value = '';
+        filePreview.style.display = 'none';
+        filePreview.innerHTML = '';
+      }
+
+      function newChat() {
+        heroSection.style.display = 'flex';
+        chatArea.style.display = 'none';
+        chatWrap.innerHTML = '';
+        activeChatId = null;
+        headerChatInfo.style.display = 'none';
+        chatInput.value = '';
+        chatInput.style.height = 'auto';
+        removeFile();
+        sidebar.classList.remove('open');
+        sidebarBackdrop.classList.remove('active');
+      }
+
+      newChatBtn.addEventListener('click', newChat);
+      newChatTopBtn.addEventListener('click', newChat);
 
       async function sendMessage() {
         const text = chatInput.value.trim();
-        if (!text || isSending) return;
+        if (!text && !attachedFileData) return;
+        if (isSending) return;
 
         isSending = true;
         sendBtn.disabled = true;
 
+        let finalText = text;
+        if (attachedFileData) {
+          if (attachedFileData.type === 'image') {
+            finalText = `[Gambar terlampir: ${attachedFileData.name}]\nBase64 Data: ${attachedFileData.content.substring(0, 100)}...\n\n${text}`;
+          } else {
+            finalText = `[File terlampir: ${attachedFileData.name}]\n```\n${attachedFileData.content.substring(0, 2000)}\n```\n\n${text}`;
+          }
+          removeFile();
+        }
+
         heroSection.style.display = 'none';
         chatArea.style.display = 'block';
 
+        if (!activeChatId) {
+          activeChatId = generateUUID();
+          const title = finalText.substring(0, 40) + (finalText.length > 40 ? '...' : '');
+          chats.push({
+            id: activeChatId,
+            title: title,
+            model: modelSelect.value,
+            messages: [],
+            timestamp: Date.now()
+          });
+          headerChatInfo.style.display = 'flex';
+          headerChatTitle.textContent = title;
+          headerChatModel.textContent = modelNames[modelSelect.value];
+          renderHistory();
+        }
+
+        const currentChat = chats.find(c => c.id === activeChatId);
+        currentChat.messages.push({ role: 'user', content: finalText });
+        saveChats();
+
         const userBubble = document.createElement('div');
         userBubble.className = 'chat-bubble user';
-        userBubble.textContent = text;
+        userBubble.textContent = text || 'Mengirim file...';
         chatWrap.appendChild(userBubble);
+        
         chatInput.value = '';
         chatInput.style.height = 'auto';
         scrollToBottom();
 
-        headerChatInfo.style.display = 'flex';
-        const shortTitle = text.length > 35 ? text.substring(0, 35) + '...' : text;
-        headerChatTitle.textContent = shortTitle;
-
         const aiBubble = document.createElement('div');
         aiBubble.className = 'chat-bubble ai';
-
         const loadingDots = document.createElement('span');
         loadingDots.className = 'loading-dots';
         loadingDots.innerHTML = '<span>.</span><span>.</span><span>.</span>';
@@ -237,33 +533,50 @@
         chatWrap.appendChild(aiBubble);
         scrollToBottom();
 
+        const startTime = Date.now();
+        const endpoint = apiMap[modelSelect.value];
+
         try {
-          const response = await fetch('/api/chat/gpt', {
+          const body = { message: finalText };
+          if (modelSelect.value === 'gemini') {
+            body.sessionId = activeChatId;
+          }
+
+          const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              message: text,
-              sessionId: currentSessionId
-            })
+            body: JSON.stringify(body)
           });
 
           const data = await response.json();
 
           if (data.success) {
             let aiText = data.text || '';
-            let formatted = formatAiText(aiText);
-
+            let cleaned = aiText.replace(/ Raven[\s\S]*? Raven>/gi, '').trim();
+            let formatted = escapeHtml(cleaned).replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+            
             if (formatted) {
               aiBubble.innerHTML = formatted;
+              currentChat.messages.push({ role: 'ai', content: cleaned });
             } else {
               aiBubble.textContent = 'Tidak ada respons.';
+              currentChat.messages.push({ role: 'ai', content: 'Tidak ada respons.' });
             }
-            if (data.sessionId) currentSessionId = data.sessionId;
           } else {
             aiBubble.textContent = 'Error: ' + (data.error || 'Terjadi kesalahan');
+            currentChat.messages.push({ role: 'ai', content: 'Error: ' + data.error });
           }
         } catch (err) {
-          aiBubble.textContent = 'Gagal terhubung ke server, mungkin lagi maintenance.';
+          aiBubble.textContent = 'Gagal terhubung ke server.';
+          currentChat.messages.push({ role: 'ai', content: 'Gagal terhubung ke server.' });
+        }
+
+        saveChats();
+        renderHistory();
+        
+        const duration = Date.now() - startTime;
+        if (duration > 10000) {
+          triggerNotify('ASM AI', 'AI telah selesai menjawab.');
         }
 
         isSending = false;
@@ -279,6 +592,16 @@
           sendMessage();
         }
       });
+
+      function generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+          const r = Math.random() * 16 | 0;
+          const v = c === 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+        });
+      }
+
+      renderHistory();
     });
   </script>
 </body>
