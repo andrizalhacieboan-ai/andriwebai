@@ -839,3 +839,116 @@ input:checked + .slider:before {
   background: #ff4d4d;
   color: var(--white);
 }
+
+
+.chat-bubble-wrapper {
+  position: relative;
+  margin-bottom: 20px;
+  max-width: 85%;
+}
+
+.chat-bubble-wrapper .chat-bubble {
+  margin-bottom: 0; /* Hapus margin bawaan bubble */
+}
+
+.copy-bubble-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 2px solid var(--black);
+  border-radius: 4px;
+  padding: 4px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--black);
+  box-shadow: 2px 2px 0 var(--black);
+}
+
+.chat-bubble-wrapper:hover .copy-bubble-btn {
+  opacity: 1;
+}
+
+.copy-bubble-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+/* Posisi tombol copy di bubble user */
+.chat-bubble-wrapper .chat-bubble.user + .copy-bubble-btn {
+  left: -40px;
+  right: auto;
+}
+
+
+.code-block-wrapper {
+  background: #2d2d2d;
+  border: 3px solid var(--black);
+  border-radius: 8px;
+  margin: 12px 0;
+  overflow: hidden;
+  box-shadow: 4px 4px 0 var(--black);
+}
+
+.code-block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background: #1d1d1d;
+  border-bottom: 3px solid var(--black);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.copy-code-btn {
+  background: var(--primary);
+  color: var(--black);
+  border: 2px solid var(--black);
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-weight: 700;
+  font-family: var(--font-brutal);
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--black);
+  transition: all 0.1s ease;
+}
+
+.copy-code-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.code-block-wrapper pre {
+  margin: 0 !important;
+  padding: 16px !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  overflow-x: auto;
+}
+
+.code-block-wrapper code {
+  font-family: 'Fira Code', 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #f8f8f2;
+}
+
+/* Override beberapa warna Prism agar lebih brutalis/sesuai tema */
+.token.keyword { color: #ff79c6; }
+.token.string { color: #f1fa8c; }
+.token.comment { color: #6272a4; }
+.token.function { color: #50fa7b; }
+.token.number { color: #bd93f9; }
+.token.operator { color: #ff79c6; }
+.token.punctuation { color: #f8f8f2; }
+
+.full-btn.primary {
+  background: var(--primary);
+}
