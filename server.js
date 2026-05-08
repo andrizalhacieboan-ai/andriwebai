@@ -16,7 +16,7 @@ app.use(express.json());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.post('/api/chat/gpt', async (req, res) => {
+app.post('/api/chat/glm5', async (req, res) => {
     try {
         const { message } = req.body;
         if (!message) return res.status(400).json({ success: false, error: 'Message is required' });
