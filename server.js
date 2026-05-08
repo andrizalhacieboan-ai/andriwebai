@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 
 import glm5 from './lib/glm5.js';
 import gemini from './lib/gemini.js';
-
+import dolphinai from './lib/dolphinai.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -43,7 +43,21 @@ app.post('/api/chat/gemini', async (req, res) => {
     }
 });
 
+app.post('/api/chat/dolphin', async (req, res) => {
+    try {
+        const { messages, template } = req.body;
 
+        if (!messages || !Array.isArray(messages)) {
+            return res.status(400).json({ success: false, error: 'Messages array is required' });
+        }
+
+        const responseText = await dolphinai({ messages, template });
+        res.json({ success: true, text: responseText });
+    } catch (error) {
+        console.error('DolphinAI Error:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
 
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
