@@ -9,7 +9,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css">
-  <!-- Prism.js untuk Syntax Highlighting Kode -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
 </head>
 <body>
@@ -90,7 +89,7 @@
         <div class="input-top-row">
           <select id="modelSelect" class="model-select">
             <option value="glm-5">GLM-5 (Z.AI)</option>
-            <option value="gemini">Gemini (flash 3)</option>
+            <option value="gemini">Gemini (Flash 3)</option>
             <option value="deepseek">Deepseek</option>
             <option value="gpt">GPT</option>
             <option value="dolphinai">Dolphin AI</option>
@@ -102,12 +101,12 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
           </button>
           <div id="filePreview" class="file-preview" style="display:none;"></div>
-          <textarea class="chat-input" id="chatInput" placeholder="You Send a Message" rows="1"></textarea>
+          <textarea class="chat-input" id="chatInput" placeholder="You Send a Message (Tekan → untuk kirim)" rows="1"></textarea>
           <div class="right-actions">
             <button class="send-btn" id="actionBtn" type="button" aria-label="Kirim">
               <svg class="send-icon" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" width="20" height="20">
-                <line x1="22" y1="2" x2="11" y2="13"></line>
-                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
               </svg>
             </button>
           </div>
@@ -154,7 +153,7 @@
           <a href="https://wa.me/6281934874758?text=Hai%20dev%20lagi%20nyari%20info" target="_blank" class="about-link-btn">WhatsApp</a>
           <a href="https://andrizalhacieboan@gmail.com" target="_blank" class="about-link-btn">Email</a>
         </div>
-        <p class="about-copy">&copy; 2024 - 2025 ASM - AI. All rights reserved.</p>
+        <p class="about-copy">&copy; 2025 - 2026 ASM - AI. All rights reserved.</p>
       </div>
     </div>
   </div>
@@ -166,13 +165,12 @@
         <button class="modal-close-btn" id="closeHistory">✕</button>
       </div>
       <div class="modal-body">
-        <button class="full-btn primary" id="shareHistoryBtn">Bagikan Semua Riwayat</button>
+        <button class="full-btn primary" id="shareHistoryBtn">Bagikan Riwayat</button>
         <button class="full-btn danger-outline" id="deleteHistoryBtn">Hapus Semua Riwayat</button>
       </div>
     </div>
   </div>
 
-  <!-- Prism.js Script untuk Warna Kode -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
@@ -182,6 +180,37 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      
+      // Cek apakah halaman dibuka sebagai Shared View
+      const urlParams = new URLSearchParams(window.location.search);
+      const shareData = urlParams.get('s');
+      if (shareData) {
+        try {
+          const chat = JSON.parse(decodeURIComponent(escape(atob(shareData))));
+          document.body.innerHTML = `
+            <div class="shared-container">
+              <div class="shared-header">ASM AI - Shared Chat</div>
+              <h2 class="shared-title">${chat.title || 'Obrolan Baru'}</h2>
+              <div class="shared-messages" id="sharedMessages"></div>
+              <a href="/" class="shared-footer">Gunakan ASM AI</a>
+            </div>
+          `;
+          const container = document.getElementById('sharedMessages');
+          chat.messages.forEach(msg => {
+            const div = document.createElement('div');
+            div.className = `shared-bubble ${msg.role}`;
+            const role = msg.role === 'user' ? 'Kamu' : 'AI';
+            const escapedText = document.createElement('div');
+            escapedText.textContent = msg.content;
+            div.innerHTML = `<strong>${role}:</strong><br>${escapedText.innerHTML.replace(/\n/g, '<br>')}`;
+            container.appendChild(div);
+          });
+          return; // Hentikan eksekusi app utama
+        } catch(e) {
+          console.error("Format URL share tidak valid", e);
+        }
+      }
+
       const menuBtn = document.getElementById('menuBtn');
       const sideClose = document.getElementById('sideClose');
       const sidebar = document.getElementById('sidebar');
@@ -280,22 +309,33 @@
         return div.innerHTML;
       }
 
-      // Format teks AI menjadi HTML (Mendukung Blok Kode & Tebal)
+      // Format teks AI + Kode Berwarna
       function formatAIText(rawText) {
-        let safe = escapeHtml(rawText);
-        // Format blok kode ```bahasa ... ```
-        safe = safe.replace(/&#x60;&#x60;&#x60;(\w*)\n([\s\S]*?)&#x60;&#x60;&#x60;/g, (match, lang, code) => {
+        const codeBlocks = [];
+        // 1. Ekstrak blok kode agar tidak ter-escape HTML
+        let text = rawText.replace(/```(\w*)\n([\s\S]*?)```/g, (match, lang, code) => {
           const language = lang || 'plaintext';
-          return `<div class="code-block-wrapper"><div class="code-block-header"><span>${language}</span><button class="copy-code-btn" onclick="copyCodeBlock(this)">Copy</button></div><pre><code class="language-${language}">${code.trim()}</code></pre></div>`;
+          const index = codeBlocks.length;
+          codeBlocks.push({lang: language, code: escapeHtml(code.trim())});
+          return `%%CODEBLOCK_${index}%%`;
         });
-        // Format tebal **teks**
-        safe = safe.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        // Format baris baru
-        safe = safe.replace(/\n/g, '<br>');
-        return safe;
+
+        // 2. Escape HTML untuk teks biasa
+        let safeText = escapeHtml(text);
+
+        // 3. Format Teks (Tebal & Ganti Baris)
+        safeText = safeText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        safeText = safeText.replace(/\n/g, '<br>');
+
+        // 4. Kembalikan blok kode dengan wrapper Prism.js
+        codeBlocks.forEach((block, index) => {
+          const codeHtml = `<div class="code-block-wrapper"><div class="code-block-header"><span>${block.lang}</span><button class="copy-code-btn" onclick="copyCodeBlock(this)">Copy</button></div><pre><code class="language-${block.lang}">${block.code}</code></pre></div>`;
+          safeText = safeText.replace(`%%CODEBLOCK_${index}%%`, codeHtml);
+        });
+
+        return safeText;
       }
 
-      // Fungsi Copy untuk Bubble Chat
       function copyBubbleText(button, text) {
         navigator.clipboard.writeText(text).then(() => {
           const originalText = button.innerHTML;
@@ -305,11 +345,9 @@
         });
       }
 
-      // Fungsi Copy untuk Blok Kode
       window.copyCodeBlock = function(button) {
         const codeBlock = button.closest('.code-block-wrapper').querySelector('code');
-        const text = codeBlock.textContent;
-        navigator.clipboard.writeText(text).then(() => {
+        navigator.clipboard.writeText(codeBlock.textContent).then(() => {
           button.textContent = 'Copied!';
           setTimeout(() => { button.textContent = 'Copy'; }, 1500);
         });
@@ -420,40 +458,41 @@
         showToast('Riwayat dihapus');
       }
 
+      function generateShareURL(data) {
+        try {
+          const jsonStr = JSON.stringify(data);
+          const base64 = btoa(unescape(encodeURIComponent(jsonStr)));
+          return window.location.origin + window.location.pathname + "?s=" + base64;
+        } catch(e) {
+          return null;
+        }
+      }
+
       function shareChat(id) {
         const chat = chats.find(c => c.id === id);
         if (!chat) return;
-        let text = `ASM AI - ${chat.title}\nModel: ${modelNames[chat.model]}\n\n`;
-        chat.messages.forEach(msg => {
-          const role = msg.role === 'user' ? 'Kamu' : 'AI';
-          text += `[${role}]:\n${msg.content}\n\n`;
-        });
-
-        if (navigator.share) {
-          navigator.share({ title: `ASM AI - ${chat.title}`, text: text }).catch(err => console.log(err));
+        const url = generateShareURL(chat);
+        if (url && url.length < 2000) {
+          navigator.clipboard.writeText(url).then(() => showToast('URL Berhasil disalin!'));
         } else {
-          navigator.clipboard.writeText(text).then(() => showToast('Riwayat disalin ke clipboard'));
+          showToast('Obrolan terlalu panjang untuk jadi URL, disalin sebagai teks.');
+          let text = `ASM AI - ${chat.title}\n\n`;
+          chat.messages.forEach(msg => {
+            text += `[${msg.role === 'user' ? 'Kamu' : 'AI'}]:\n${msg.content}\n\n`;
+          });
+          navigator.clipboard.writeText(text);
         }
       }
 
       document.getElementById('shareHistoryBtn').addEventListener('click', () => {
-        let allText = 'SEMUA RIWAYAT ASM AI\n\n';
-        chats.forEach(chat => {
-          allText += `--- ${chat.title} (${modelNames[chat.model]}) ---\n`;
-          chat.messages.forEach(msg => {
-            const role = msg.role === 'user' ? 'Kamu' : 'AI';
-            allText += `[${role}]: ${msg.content}\n`;
-          });
-          allText += '\n';
-        });
-        
-        if (navigator.share) {
-          navigator.share({ title: 'Semua Riwayat ASM AI', text: allText }).catch(err => console.log(err));
-        } else {
-          navigator.clipboard.writeText(allText).then(() => {
-            showToast('Semua riwayat berhasil disalin');
+        const url = generateShareURL(chats);
+        if (url && url.length < 2000) {
+          navigator.clipboard.writeText(url).then(() => {
+            showToast('URL Semua Riwayat disalin!');
             closeModal('historyBackdrop');
           });
+        } else {
+          showToast('Riwayat terlalu panjang untuk jadi URL.');
         }
       });
 
@@ -473,10 +512,8 @@
       fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        
         const reader = new FileReader();
         filePreview.style.display = 'flex';
-        
         if (file.type.startsWith('image/')) {
           reader.onload = (ev) => {
             attachedFileData = { name: file.name, type: 'image', content: ev.target.result };
@@ -528,7 +565,7 @@
         let finalText = text;
         if (attachedFileData) {
           if (attachedFileData.type === 'image') {
-            finalText = `[Gambar terlampir: ${attachedFileData.name}]\nBase64 Data: ${attachedFileData.content.substring(0, 100)}...\n\n${text}`;
+            finalText = `[Gambar terlampir: ${attachedFileData.name}]\n\n${text}`;
           } else {
             finalText = `[File terlampir: ${attachedFileData.name}]\n\`\`\`\n${attachedFileData.content.substring(0, 2000)}\n\`\`\`\n\n${text}`;
           }
@@ -642,10 +679,16 @@
 
       sendBtn.addEventListener('click', sendMessage);
 
-      chatInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          sendMessage();
+      // Ganti Enter ke Panah Kanan
+      chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') {
+          const len = chatInput.value.length;
+          const pos = chatInput.selectionStart;
+          // Hanya kirim jika kursor berada di akhir teks
+          if (pos === len && len > 0) {
+            e.preventDefault();
+            sendMessage();
+          }
         }
       });
 
