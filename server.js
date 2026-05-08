@@ -55,7 +55,7 @@ app.post('/api/chat/dolphin', async (req, res) => {
             chatMessages = [{ role: 'user', content: String(message) }];
         }
 
-        if (!chatMessages  !Array.isArray(chatMessages)  chatMessages.length === 0) {
+        if (!chatMessages || !Array.isArray(chatMessages) || chatMessages.length === 0) {
             return res.status(400).json({ success: false, error: 'Messages array or message string is required' });
         }
 
