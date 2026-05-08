@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 
 import glm5 from './lib/glm5.js';
 import gemini from './lib/gemini.js';
+import chatgptInit from './lib/chatgptinit.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -38,6 +39,17 @@ app.post('/api/chat/gemini', async (req, res) => {
         res.json({ success: true, text: response.text, sessionId: response.sessionId });
     } catch (error) {
         console.error('Gemini Error:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.post('/api/chatgpt', async (req, res) => {
+    try {
+        const { authToken } = req.body;
+        const result = await chatgptInit(authToken);
+        res.json(result);
+    } catch (error) {
+        console.error('ChatGPT Init Error:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
