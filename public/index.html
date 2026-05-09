@@ -253,7 +253,7 @@
         'glm-5': '/api/chat/gpt',
         'gemini': '/api/chat/gemini',
         'deepseek': '/api/chat/deepseek',
-        'gpt': '/api/chat/gpt', 
+        'gpt': '/api/chat/chatgpt', 
         'dolphinai': '/api/chat/dolphin'
       };
 
@@ -628,10 +628,22 @@
         const startTime = Date.now();
         const endpoint = apiMap[modelSelect.value];
 
-        try {
+                try {
           const body = { message: finalText };
           if (modelSelect.value === 'gemini') {
             body.sessionId = activeChatId;
+          }
+          
+          // Tambahkan Riwayat & Base64 Gambar untuk ChatGPT Web dan DolphinAI
+          if (modelSelect.value === 'chatgpt' || modelSelect.value === 'dolphinai') {
+            body.history = currentChat.messages.map(m => ({
+              role: m.role === 'user' ? 'user' : 'assistant',
+              content: m.content
+            }));
+            
+            if (modelSelect.value === 'chatgpt' && attachedFileData && attachedFileData.type === 'image') {
+              body.imageBase64 = attachedFileData.content;
+            }
           }
 
           const response = await fetch(endpoint, {
@@ -641,6 +653,8 @@
           });
 
           const data = await response.json();
+          
+ 
 
           if (data.success) {
             let aiText = data.text || '';
