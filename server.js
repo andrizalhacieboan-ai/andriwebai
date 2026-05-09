@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 import glm5 from './lib/glm5.js';
 import gemini from './lib/gemini.js';
 import dolphinai from './lib/dolphinai.js';
-import chatgptWeb from './lib/chatgpt.js';
+import gptFree from './lib/chatgpt.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,7 +15,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-
+app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.post('/api/chat/glm5', async (req, res) => {
@@ -70,38 +70,21 @@ app.post('/api/chat/dolphin', async (req, res) => {
 
 app.post('/api/chat/chatgpt', async (req, res) => {
     try {
-        const { message, instruction, history, imageBase64 } = req.body;
+        const { message, prompt, temperature } = req.body;
 
         if (!message) {
             return res.status(400).json({ success: false, error: 'Message is required' });
         }
 
-        let imageBuffer = null;
-        // Jika frontend mengirim gambar, ubah Base64 menjadi Buffer
-        if (imageBase64) {
-            const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
-            imageBuffer = Buffer.from(base64Data, 'base64');
-        }
-
-        const result = await chatgptWeb({
-            message,
-            instruction,
-            imageBuffer,
-            history
-        });
-
-        res.json({
-            success: true,
-            text: result.text,
-            model: result.model,
-            conversationId: result.conversationId
-        });
+        const responseText = await gptFree({ message, prompt, temperature });
+        res.json({ success: true, text: responseText });
     } catch (error) {
-        console.error('ChatGPT Web Error:', error);
+        console.error('GPT Free Error:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
 
+ 
 
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
