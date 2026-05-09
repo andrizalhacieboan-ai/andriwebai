@@ -650,33 +650,55 @@
           });
 
           const data = await response.json();
-          
-          if (data.success) {
-            if (modelSelect.value === 'aibanana') {
-              let imageHtml = "Gambar berhasil dibuat, namun format tidak dikenali.<br><pre>" + escapeHtml(JSON.stringify(data.data, null, 2)) + "</pre>";
+                      if (modelSelect.value === 'aibanana') {
+              // Handle khusus untuk AI Image Generator
+              let imageHtml = "";
+              let imgUrl = null;
               
               if (data.data) {
-                let imgUrl = null;
-                if (data.data.images && data.data.images[0]) {
-                  imgUrl = data.data.images[0].url || data.data.images[0];
-                } else if (data.data.data && data.data.data[0]) {
-                  imgUrl = data.data.data[0].url || data.data.data[0].b64_json;
-                } else if (data.data.url) {
-                  imgUrl = data.data.url;
-                } else if (data.data.image) {
-                  imgUrl = data.data.image;
+                const resData = data.data;
+                
+                // 1. Cek jika respons langsung berupa string (URL atau Base64)
+                if (typeof resData === 'string') {
+                  imgUrl = resData;
+                } 
+                // 2. Cek format array umum (OpenAI style)
+                else if (resData.images && resData.images[0]) {
+                  imgUrl = resData.images[0].url || resData.images[0];
+                } 
+                // 3. Cek format data array (Stability style)
+                else if (resData.data && resData.data[0]) {
+                  imgUrl = resData.data[0].url || resData.data[0].b64_json || resData.data[0];
+                } 
+                // 4. Cek jika objek langsung punya key url / image / output
+                else if (resData.url) {
+                  imgUrl = resData.url;
+                } else if (resData.image) {
+                  imgUrl = resData.image;
+                } else if (resData.output) {
+                  imgUrl = resData.output;
+                } else if (resData.result) {
+                  imgUrl = typeof resData.result === 'string' ? resData.result : resData.result.url || resData.result.image;
                 }
+              }
 
-                if (imgUrl) {
-                  if (!imgUrl.startsWith('http') && !imgUrl.startsWith('data:')) {
-                    imgUrl = 'data:image/png;base64,' + imgUrl;
-                  }
-                  imageHtml = `<img src="${imgUrl}" alt="AI Generated Image" style="max-width:100%; border-radius:8px; border: 3px solid #000; box-shadow: 4px 4px 0 #000;">`;
+              // Jika URL/Base64 ditemukan, render tag <img>
+              if (imgUrl) {
+                // Jika ini base64 mentah tanpa prefix, tambahkan prefixnya
+                if (!imgUrl.startsWith('http') && !imgUrl.startsWith('data:')) {
+                  imgUrl = 'data:image/png;base64,' + imgUrl;
                 }
+                imageHtml = `<img src="${imgUrl}" alt="AI Generated Image" style="max-width:100%; border-radius:8px; border: 3px solid #000; box-shadow: 4px 4px 0 #000;">`;
+              } else {
+                // FALLBACK DEBUG: Jika gambar tidak ketemu, tampilkan raw JSON
+                // Ini agar kita bisa lihat bentuk JSON sebenarnya dari API
+                imageHtml = "<strong>⚠️ Gambar berhasil dibuat, tapi format API tidak dikenali.</strong><br>Raw Response:<br><pre style='max-height:200px; overflow:auto; text-align:left; font-size:10px;'>" + escapeHtml(JSON.stringify(data.data, null, 2)) + "</pre>";
               }
 
               aiBubble.innerHTML = imageHtml;
               currentChat.messages.push({ role: 'ai', content: imageHtml, isImage: true });
+
+               }
 
             } else {
               let aiText = data.text || '';
