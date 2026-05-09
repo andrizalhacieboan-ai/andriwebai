@@ -7,6 +7,7 @@ import glm5 from './lib/glm5.js';
 import gemini from './lib/gemini.js';
 import dolphinai from './lib/dolphinai.js';
 import gptFree from './lib/chatgpt.js';
+import aibanana from './lib/aibanana.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -84,7 +85,24 @@ app.post('/api/chat/chatgpt', async (req, res) => {
     }
 });
 
- 
+ app.post('/api/image/banana', async (req, res) => {
+    try {
+        const { message } = req.body;
+
+        if (!message) {
+            return res.status(400).json({ success: false, error: 'Prompt is required' });
+        }
+
+        // Proses ini butuh waktu karena menyelesaikan Turnstile & Generate Gambar
+        const result = await aibanana(message);
+        
+        res.json({ success: true, data: result });
+    } catch (error) {
+        console.error('AI Banana Error:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
