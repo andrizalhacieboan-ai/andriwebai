@@ -93,6 +93,7 @@
             <option value="deepseek">Deepseek</option>
             <option value="gpt">GPT</option>
             <option value="dolphinai">Dolphin AI</option>
+            <option value="dolphinai">Banana AI</option>
           </select>
         </div>
         <div class="input-row">
@@ -101,7 +102,7 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
           </button>
           <div id="filePreview" class="file-preview" style="display:none;"></div>
-          <textarea class="chat-input" id="chatInput" placeholder="You Send a Message (Tekan → untuk kirim)" rows="1"></textarea>
+          <textarea class="chat-input" id="chatInput" placeholder="You Send a Message" rows="1"></textarea>
           <div class="right-actions">
             <button class="send-btn" id="actionBtn" type="button" aria-label="Kirim">
               <svg class="send-icon" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" width="20" height="20">
@@ -254,7 +255,8 @@
         'gemini': '/api/chat/gemini',
         'deepseek': '/api/chat/deepseek',
         'gpt': '/api/chat/chatgpt', 
-        'dolphinai': '/api/chat/dolphin'
+        'dolphinai': '/api/chat/dolphin', 
+        'aibanana': '/api/image/banana' 
       };
 
       const modelNames = {
@@ -262,7 +264,8 @@
         'gemini': 'Gemini',
         'deepseek': 'Deepseek',
         'gpt': 'GPT', 
-        'dolphinai': 'Dolphin AI'
+        'dolphinai': 'Dolphin AI', 
+        'aibanana': 'AI Banana'
       };
 
       document.getElementById('notifToggle').checked = settings.notifications;
@@ -421,7 +424,7 @@
         chatArea.style.display = 'block';
         chatWrap.innerHTML = '';
 
-        chat.messages.forEach(msg => {
+                chat.messages.forEach(msg => {
           const wrapper = document.createElement('div');
           wrapper.className = 'chat-bubble-wrapper';
           
@@ -435,6 +438,9 @@
 
           if (msg.role === 'user') {
             bubble.textContent = msg.content;
+          } else if (msg.isImage) {
+            // Jika riwayat adalah gambar, langsung render HTML-nya
+            bubble.innerHTML = msg.content;
           } else {
             bubble.innerHTML = formatAIText(msg.content);
             if(window.Prism) Prism.highlightAllUnder(bubble);
@@ -444,7 +450,7 @@
           wrapper.appendChild(copyBtn);
           chatWrap.appendChild(wrapper);
         });
-
+        
         scrollToBottom();
         toggleSidebar();
         renderHistory();
@@ -656,27 +662,56 @@
           
  
 
-          if (data.success) {
-            let aiText = data.text || '';
-            let cleaned = aiText.replace(/<think[\s\S]*?<\/think>/gi, '').trim();
-            aiBubble.innerHTML = formatAIText(cleaned);
-            if(window.Prism) Prism.highlightAllUnder(aiBubble);
-            
-            const aiCopyBtn = document.createElement('button');
-            aiCopyBtn.className = 'copy-bubble-btn';
-            aiCopyBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
-            aiCopyBtn.onclick = () => copyBubbleText(aiCopyBtn, cleaned);
-            aiWrapper.appendChild(aiCopyBtn);
+                    if (data.success) {
+            if (modelSelect.value === 'aibanana') {
+              // Handle khusus untuk AI Image Generator
+              let imageHtml = "Gambar berhasil dibuat, namun format tidak dikenali.<br><pre>" + escapeHtml(JSON.stringify(data.data, null, 2)) + "</pre>";
+              
+              // Coba cari URL gambar dari berbagai kemungkinan struktur JSON API
+              if (data.data) {
+                let imgUrl = null;
+                if (data.data.images && data.data.images[0]) { // Format umum 1
+                  imgUrl = data.data.images[0].url || data.data.images[0];
+                } else if (data.data.data && data.data.data[0]) { // Format umum 2
+                  imgUrl = data.data.data[0].url || data.data.data[0].b64_json;
+                } else if (data.data.url) { // Format umum 3
+                  imgUrl = data.data.url;
+                } else if (data.data.image) { // Format umum 4
+                  imgUrl = data.data.image;
+                }
 
-            currentChat.messages.push({ role: 'ai', content: cleaned });
+                if (imgUrl) {
+                  // Jika URL base64, pastikan ada prefixnya
+                  if (!imgUrl.startsWith('http') && !imgUrl.startsWith('data:')) {
+                    imgUrl = 'data:image/png;base64,' + imgUrl;
+                  }
+                  imageHtml = `<img src="${imgUrl}" alt="AI Generated Image" style="max-width:100%; border-radius:8px; border: 3px solid #000; box-shadow: 4px 4px 0 #000;">`;
+                }
+              }
+
+              aiBubble.innerHTML = imageHtml;
+              currentChat.messages.push({ role: 'ai', content: imageHtml, isImage: true });
+
+            } else {
+              // Handle untuk AI Teks Biasa
+              let aiText = data.text || '';
+              let cleaned = aiText.replace(/<think[\s\S]*?<\/think>/gi, '').trim();
+              let formatted = formatAIText(cleaned);
+              
+              if (formatted) {
+                aiBubble.innerHTML = formatted;
+                if(window.Prism) Prism.highlightAllUnder(aiBubble);
+                currentChat.messages.push({ role: 'ai', content: cleaned });
+              } else {
+                aiBubble.textContent = 'Tidak ada respons.';
+                currentChat.messages.push({ role: 'ai', content: 'Tidak ada respons.' });
+              }
+            }
           } else {
+            // Handle error
             aiBubble.textContent = 'Error: ' + (data.error || 'Terjadi kesalahan');
             currentChat.messages.push({ role: 'ai', content: 'Error: ' + data.error });
           }
-        } catch (err) {
-          aiBubble.textContent = 'Gagal terhubung ke server.';
-          currentChat.messages.push({ role: 'ai', content: 'Gagal terhubung ke server.' });
-        }
 
         saveChats();
         renderHistory();
