@@ -85,7 +85,8 @@ app.post('/api/chat/chatgpt', async (req, res) => {
     }
 });
 
- app.post('/api/image/banana', async (req, res) => {
+ 
+app.post('/api/image/banana', async (req, res) => {
     try {
         const { message } = req.body;
 
@@ -93,12 +94,19 @@ app.post('/api/chat/chatgpt', async (req, res) => {
             return res.status(400).json({ success: false, error: 'Prompt is required' });
         }
 
-        // Proses ini butuh waktu karena menyelesaikan Turnstile & Generate Gambar
         const result = await aibanana(message);
-        
         res.json({ success: true, data: result });
     } catch (error) {
-        console.error('AI Banana Error:', error);
+        console.error('AI Banana Error:', error.message);
+        
+        // Tangkap error spesifik kuota habis (429 Too Many Requests)
+        if (error.message.includes('free quota has been used up') || error.message.includes('429')) {
+            return res.status(429).json({ 
+                success: false, 
+                error: '🚫 Kuota gratis AI Banana hari ini sudah habis (Limit 20 gambar/hari). Silakan coba lagi besok atau gunakan AI teks lainnya.' 
+            });
+        }
+
         res.status(500).json({ success: false, error: error.message });
     }
 });
