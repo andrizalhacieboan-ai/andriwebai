@@ -182,7 +182,6 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       
-      // Cek apakah halaman dibuka sebagai Shared View
       const urlParams = new URLSearchParams(window.location.search);
       const shareData = urlParams.get('s');
       if (shareData) {
@@ -206,7 +205,7 @@
             div.innerHTML = `<strong>${role}:</strong><br>${escapedText.innerHTML.replace(/\n/g, '<br>')}`;
             container.appendChild(div);
           });
-          return; // Hentikan eksekusi app utama
+          return;
         } catch(e) {
           console.error("Format URL share tidak valid", e);
         }
@@ -312,10 +311,8 @@
         return div.innerHTML;
       }
 
-      // Format teks AI + Kode Berwarna
       function formatAIText(rawText) {
         const codeBlocks = [];
-        // 1. Ekstrak blok kode agar tidak ter-escape HTML
         let text = rawText.replace(/```(\w*)\n([\s\S]*?)```/g, (match, lang, code) => {
           const language = lang || 'plaintext';
           const index = codeBlocks.length;
@@ -323,14 +320,10 @@
           return `%%CODEBLOCK_${index}%%`;
         });
 
-        // 2. Escape HTML untuk teks biasa
         let safeText = escapeHtml(text);
-
-        // 3. Format Teks (Tebal & Ganti Baris)
         safeText = safeText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         safeText = safeText.replace(/\n/g, '<br>');
 
-        // 4. Kembalikan blok kode dengan wrapper Prism.js
         codeBlocks.forEach((block, index) => {
           const codeHtml = `<div class="code-block-wrapper"><div class="code-block-header"><span>${block.lang}</span><button class="copy-code-btn" onclick="copyCodeBlock(this)">Copy</button></div><pre><code class="language-${block.lang}">${block.code}</code></pre></div>`;
           safeText = safeText.replace(`%%CODEBLOCK_${index}%%`, codeHtml);
@@ -424,7 +417,7 @@
         chatArea.style.display = 'block';
         chatWrap.innerHTML = '';
 
-                chat.messages.forEach(msg => {
+        chat.messages.forEach(msg => {
           const wrapper = document.createElement('div');
           wrapper.className = 'chat-bubble-wrapper';
           
@@ -439,7 +432,6 @@
           if (msg.role === 'user') {
             bubble.textContent = msg.content;
           } else if (msg.isImage) {
-            // Jika riwayat adalah gambar, langsung render HTML-nya
             bubble.innerHTML = msg.content;
           } else {
             bubble.innerHTML = formatAIText(msg.content);
@@ -634,13 +626,12 @@
         const startTime = Date.now();
         const endpoint = apiMap[modelSelect.value];
 
-                try {
+        try {
           const body = { message: finalText };
           if (modelSelect.value === 'gemini') {
             body.sessionId = activeChatId;
           }
           
-          // Tambahkan Riwayat & Base64 Gambar untuk ChatGPT Web dan DolphinAI
           if (modelSelect.value === 'chatgpt' || modelSelect.value === 'dolphinai') {
             body.history = currentChat.messages.map(m => ({
               role: m.role === 'user' ? 'user' : 'assistant',
@@ -660,28 +651,23 @@
 
           const data = await response.json();
           
- 
-
-                    if (data.success) {
+          if (data.success) {
             if (modelSelect.value === 'aibanana') {
-              // Handle khusus untuk AI Image Generator
               let imageHtml = "Gambar berhasil dibuat, namun format tidak dikenali.<br><pre>" + escapeHtml(JSON.stringify(data.data, null, 2)) + "</pre>";
               
-              // Coba cari URL gambar dari berbagai kemungkinan struktur JSON API
               if (data.data) {
                 let imgUrl = null;
-                if (data.data.images && data.data.images[0]) { // Format umum 1
+                if (data.data.images && data.data.images[0]) {
                   imgUrl = data.data.images[0].url || data.data.images[0];
-                } else if (data.data.data && data.data.data[0]) { // Format umum 2
+                } else if (data.data.data && data.data.data[0]) {
                   imgUrl = data.data.data[0].url || data.data.data[0].b64_json;
-                } else if (data.data.url) { // Format umum 3
+                } else if (data.data.url) {
                   imgUrl = data.data.url;
-                } else if (data.data.image) { // Format umum 4
+                } else if (data.data.image) {
                   imgUrl = data.data.image;
                 }
 
                 if (imgUrl) {
-                  // Jika URL base64, pastikan ada prefixnya
                   if (!imgUrl.startsWith('http') && !imgUrl.startsWith('data:')) {
                     imgUrl = 'data:image/png;base64,' + imgUrl;
                   }
@@ -693,7 +679,6 @@
               currentChat.messages.push({ role: 'ai', content: imageHtml, isImage: true });
 
             } else {
-              // Handle untuk AI Teks Biasa
               let aiText = data.text || '';
               let cleaned = aiText.replace(/<think[\s\S]*?<\/think>/gi, '').trim();
               let formatted = formatAIText(cleaned);
@@ -708,10 +693,13 @@
               }
             }
           } else {
-            // Handle error
             aiBubble.textContent = 'Error: ' + (data.error || 'Terjadi kesalahan');
             currentChat.messages.push({ role: 'ai', content: 'Error: ' + data.error });
           }
+        } catch (err) {
+          aiBubble.textContent = 'Gagal terhubung ke server.';
+          currentChat.messages.push({ role: 'ai', content: 'Gagal terhubung ke server.' });
+        }
 
         saveChats();
         renderHistory();
@@ -728,12 +716,10 @@
 
       sendBtn.addEventListener('click', sendMessage);
 
-      // Ganti Enter ke Panah Kanan
       chatInput.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight') {
           const len = chatInput.value.length;
           const pos = chatInput.selectionStart;
-          // Hanya kirim jika kursor berada di akhir teks
           if (pos === len && len > 0) {
             e.preventDefault();
             sendMessage();
