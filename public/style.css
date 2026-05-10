@@ -355,7 +355,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 20px;
+  padding: 24px 20px;
 }
 
 .logo-container {
@@ -363,39 +363,54 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: 16px;
 }
 
+
 .logo {
-  width: 100px;
-  height: 100px;
+  width: 56px;
+  height: 56px;
   border: var(--border-thick);
-  border-radius: 16px;
-  box-shadow: var(--shadow-hard);
+  border-radius: 12px;
+  box-shadow: var(--shadow-hard-sm);
   background: var(--white);
-  padding: 10px;
   transform: rotate(-3deg);
   transition: transform 0.3s;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 3rem;
+  font-size: 1.8rem;
 }
 
 .logo:hover {
   transform: rotate(0deg);
 }
 
-.welcome-text {
-  font-size: 1.8rem;
-  font-weight: 700;
-  max-width: 400px;
-  line-height: 1.3;
-  background: var(--primary);
-  padding: 10px 20px;
-  border: var(--border-thick);
-  box-shadow: var(--shadow-hard);
+.welcome-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
 }
+
+.welcome-text {
+  font-size: 1.2rem;
+  font-weight: 700;
+  background: var(--primary);
+  padding: 6px 16px;
+  border: var(--border-thin);
+  box-shadow: var(--shadow-hard-sm);
+  line-height: 1.3;
+}
+
+.welcome-desc {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #555;
+  max-width: 340px;
+  line-height: 1.45;
+}
+
 
 .ai-cards {
   display: grid;
@@ -1078,43 +1093,45 @@ input:checked + .slider:before {
 .quick-cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 8px;
   width: 100%;
-  max-width: 400px;
-  margin-top: 30px;
+  max-width: 340px;
+  margin-top: 14px;
 }
 
 .quick-card {
-  padding: 14px 10px;
+  padding: 10px 8px;
   border: var(--border-thin);
   border-radius: var(--radius);
   background: var(--white);
   font-weight: 700;
   text-align: center;
   cursor: pointer;
-  box-shadow: var(--shadow-hard-sm);
+  box-shadow: 2px 2px 0 var(--black);
   transition: all 0.2s ease-in-out;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
+
 
 .quick-card:hover {
   background: var(--primary);
-  transform: translateY(-3px);
-  box-shadow: 6px 6px 0 var(--black);
+  transform: translateY(-2px);
+  box-shadow: 4px 4px 0 var(--black);
 }
 
 .quick-card:active {
-  transform: translate(3px, 3px);
+  transform: translate(2px, 2px);
   box-shadow: none;
 }
 
 .qc-icon {
-  font-size: 1.5rem;
+  font-size: 1.15rem;
 }
 
 .qc-text {
-  font-size: 0.85rem;
+  font-size: 0.72rem;
+  letter-spacing: -0.01em;
 }
