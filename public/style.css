@@ -1073,3 +1073,48 @@ input:checked + .slider:before {
 .user-counter svg {
   color: var(--primary);
 }
+
+
+.quick-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+  max-width: 400px;
+  margin-top: 30px;
+}
+
+.quick-card {
+  padding: 14px 10px;
+  border: var(--border-thin);
+  border-radius: var(--radius);
+  background: var(--white);
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-hard-sm);
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.quick-card:hover {
+  background: var(--primary);
+  transform: translateY(-3px);
+  box-shadow: 6px 6px 0 var(--black);
+}
+
+.quick-card:active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
+.qc-icon {
+  font-size: 1.5rem;
+}
+
+.qc-text {
+  font-size: 0.85rem;
+}
