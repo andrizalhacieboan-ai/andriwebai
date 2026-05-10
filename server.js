@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 import glm5 from './lib/glm5.js';
 import gemini from './lib/gemini.js';
@@ -110,6 +111,33 @@ app.post('/api/image/banana', async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 });
+
+const visitorsFile = path.join(__dirname, 'lib', 'users.json');
+
+app.post('/api/stats/visit', (req, res) => {
+    const { visitorId } = req.body;
+    if (!visitorId) return res.status(400).json({ error: 'Visitor ID required' });
+
+    try {
+        let visitors = [];
+        if (fs.existsSync(visitorsFile)) {
+            const data = fs.readFileSync(visitorsFile, 'utf8');
+            visitors = JSON.parse(data);
+        }
+
+        // Cek apakah visitorId sudah pernah terdaftar
+        if (!visitors.includes(visitorId)) {
+            visitors.push(visitorId);
+            fs.writeFileSync(visitorsFile, JSON.stringify(visitors, null, 2));
+        }
+
+        res.json({ success: true, totalUsers: visitors.length });
+    } catch (err) {
+        console.error('Visitor count error:', err);
+        res.json({ success: true, totalUsers: 0 }); // Fallback jika error
+    }
+});
+
 
 
 app.get('*', (req, res) => {
