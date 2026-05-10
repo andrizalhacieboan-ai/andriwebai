@@ -77,10 +77,29 @@
     </header>
 
     <main class="main-content">
-      <section class="welcome-section" id="hero">
+            <section class="welcome-section" id="hero">
         <div class="logo-container">
           <div class="logo">さ</div>
           <span class="welcome-text">ASM - AI, Tanya Aja.</span>
+        </div>
+        
+        <div class="quick-cards">
+          <div class="quick-card" onclick="fillInput('Buatkan kode JavaScript untuk fetch API')">
+            <span class="qc-icon">💻</span>
+            <span class="qc-text">Tulis Kode</span>
+          </div>
+          <div class="quick-card" onclick="fillInput('Jelaskan konsep machine learning dengan bahasa sederhana')">
+            <span class="qc-icon">💡</span>
+            <span class="qc-text">Pelajari Konsep</span>
+          </div>
+          <div class="quick-card" onclick="document.getElementById('modelSelect').value='aibanana'; fillInput('A beautiful cyberpunk city at night')">
+            <span class="qc-icon">🎨</span>
+            <span class="qc-text">Buat Gambar</span>
+          </div>
+          <div class="quick-card" onclick="fillInput('Bantu saya merencanakan jadwal belajar harian')">
+            <span class="qc-icon">📅</span>
+            <span class="qc-text">Buat Rencana</span>
+          </div>
         </div>
       </section>
 
@@ -775,8 +794,29 @@
         }
       };
 
-      recordVisit();
+          // ========================================
+      // QUICK ACTION FILL
+      // ========================================
+      window.fillInput = function(text) {
+        chatInput.value = text;
+        chatInput.focus();
+        autoResize();
+      };
 
+      // ========================================
+      // PWA SERVICE WORKER REGISTRATION
+      // ========================================
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').then(reg => {
+            console.log('SW Registered:', reg.scope);
+          }).catch(err => {
+            console.error('SW Registration failed:', err);
+          });
+        });
+      }
+      
+      recordVisit();
       renderHistory();
     });
   </script>
