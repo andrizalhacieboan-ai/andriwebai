@@ -112,7 +112,7 @@ app.post('/api/image/banana', async (req, res) => {
     }
 });
 
-const visitorsFile = path.join(__dirname, 'lib', 'users.json');
+const visitorsFile = path.join(__dirname, 'lib', 'visitors.json');
 
 app.post('/api/stats/visit', (req, res) => {
     const { visitorId } = req.body;
