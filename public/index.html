@@ -81,30 +81,33 @@
 
     <main class="main-content">
             <section class="welcome-section" id="hero">
-        <div class="logo-container">
-          <div class="logo">さ</div>
-          <span class="welcome-text">ASM - AI, Tanya Aja.</span>
-        </div>
-        
-        <div class="quick-cards">
-          <div class="quick-card" onclick="fillInput('Buatkan kode JavaScript untuk fetch API')">
-            <span class="qc-icon">💻</span>
-            <span class="qc-text">Tulis Kode</span>
-          </div>
-          <div class="quick-card" onclick="fillInput('Jelaskan konsep machine learning dengan bahasa sederhana')">
-            <span class="qc-icon">💡</span>
-            <span class="qc-text">Pelajari Konsep</span>
-          </div>
-          <div class="quick-card" onclick="document.getElementById('modelSelect').value='aibanana'; fillInput('A beautiful cyberpunk city at night')">
-            <span class="qc-icon">🎨</span>
-            <span class="qc-text">Buat Gambar</span>
-          </div>
-          <div class="quick-card" onclick="fillInput('Bantu saya merencanakan jadwal belajar harian')">
-            <span class="qc-icon">📅</span>
-            <span class="qc-text">Buat Rencana</span>
-          </div>
-        </div>
-      </section>
+  <div class="logo-container">
+    <div class="logo">さ</div>
+    <div class="welcome-info">
+      <span class="welcome-text">ASM - AI</span>
+      <p class="welcome-desc">Platform AI cerdas untuk masa depan. Jelajahi inovasi, dapatkan wawasan, dan wujudkan ide kamu dengan teknologi AI terkini</p>
+    </div>
+    
+    <div class="quick-cards">
+      <div class="quick-card" onclick="fillInput('Buatkan kode JavaScript untuk fetch API')">
+        <span class="qc-icon">💻</span>
+        <span class="qc-text">Tulis Kode</span>
+      </div>
+      <div class="quick-card" onclick="fillInput('Jelaskan konsep machine learning dengan bahasa sederhana')">
+        <span class="qc-icon">💡</span>
+        <span class="qc-text">Pelajari Konsep</span>
+      </div>
+      <div class="quick-card" onclick="document.getElementById('modelSelect').value='aibanana'; fillInput('A beautiful cyberpunk city at night')">
+        <span class="qc-icon">🎨</span>
+        <span class="qc-text">Buat Gambar</span>
+      </div>
+      <div class="quick-card" onclick="fillInput('Bantu saya merencanakan jadwal belajar harian')">
+        <span class="qc-icon">📅</span>
+        <span class="qc-text">Buat Rencana</span>
+      </div>
+    </div>
+  </div>
+</section>
 
       <section class="messages-container" id="chatArea" style="display:none;">
         <div class="messages-inner" id="chatWrap"></div>
