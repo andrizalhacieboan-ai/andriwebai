@@ -1029,8 +1029,33 @@ input:checked + .slider:before {
   color: #000;
 }
 
-.user-counter {
+.side-bottom-menu {
+  padding: 16px 20px;
+  border-top: var(--border-thick);
+  display: flex;
+  flex-wrap: wrap; /* Biar tombol dan counter tidak saling dorong */
+  gap: 8px;
+  background: #f1f1f1;
+}
+
+.side-bottom-btn {
   flex: 1;
+  min-width: 0; /* Cegah konten melebihi flex container */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  background: var(--white);
+  border: var(--border-thin);
+  border-radius: var(--radius);
+  font-weight: 700;
+  font-size: 0.9rem;
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.user-counter {
+  flex: 1 1 100%; /* Counter akan mengambil 1 baris penuh di atas tombol */
   display: flex;
   align-items: center;
   justify-content: center;
