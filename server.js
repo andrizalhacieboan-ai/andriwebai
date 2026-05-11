@@ -23,8 +23,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // ========================================
 // SUPABASE INITIALIZATION
 // ========================================
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.SUPABASE_URL || 'https://gyjdgcewyjaxcdzpzmoh.supabase.co';
+const supabaseKey = process.env.SUPABASE_ANON_KEY || 'sb_publishable_u8sIahtF6JGs00xjGTR1pg_3GQfmL2E';
 
 if (!supabaseUrl || !supabaseKey) {
     console.error('❌ SUPABASE_URL dan SUPABASE_ANON_KEY harus diset di Environment Variables!');
