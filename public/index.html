@@ -39,7 +39,6 @@
         <span>Obrolan Baru</span>
       </button>
       
-      <!-- PENCARIAN CERDAS -->
       <div class="search-wrapper">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input type="text" id="searchHistory" placeholder="Cari riwayat cerdas..." class="search-input">
@@ -158,7 +157,6 @@
     <button class="toast-close" id="toastClose">✕</button>
   </div>
 
-  <!-- Modal Pengaturan dengan Personalisasi -->
   <div class="modal-backdrop" id="settingsBackdrop">
     <div class="modal-box">
       <div class="modal-header">
@@ -246,12 +244,9 @@
       const revealElements = document.querySelectorAll('.scroll-reveal');
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-          }
+          if (entry.isIntersecting) entry.target.classList.add('is-visible');
         });
       }, { threshold: 0.1 });
-
       revealElements.forEach(el => observer.observe(el));
 
       // Share URL Logic
@@ -279,9 +274,7 @@
             container.appendChild(div);
           });
           return;
-        } catch(e) {
-          console.error("Format URL share tidak valid", e);
-        }
+        } catch(e) { console.error("Format URL share tidak valid", e); }
       }
 
       // Core Elements
@@ -291,16 +284,6 @@
       const sidebarBackdrop = document.getElementById('sidebarBackdrop');
       const sideHistory = document.getElementById('sideHistory');
       const searchHistory = document.getElementById('searchHistory');
-
-      const toggleSidebar = () => {
-        sidebar.classList.toggle('open');
-        sidebarBackdrop.classList.toggle('active');
-      };
-
-      menuBtn.addEventListener('click', toggleSidebar);
-      sideClose.addEventListener('click', toggleSidebar);
-      sidebarBackdrop.addEventListener('click', toggleSidebar);
-
       const sendBtn = document.getElementById('actionBtn');
       const chatInput = document.getElementById('chatInput');
       const heroSection = document.getElementById('hero');
@@ -336,15 +319,10 @@
       };
 
       const modelNames = {
-        'glm-5': 'GLM-5',
-        'gemini': 'Gemini',
-        'deepseek': 'Deepseek',
-        'gpt': 'GPT', 
-        'dolphinai': 'Dolphin AI', 
-        'aibanana': 'AI Banana'
+        'glm-5': 'GLM-5', 'gemini': 'Gemini', 'deepseek': 'Deepseek', 'gpt': 'GPT', 'dolphinai': 'Dolphin AI', 'aibanana': 'AI Banana'
       };
 
-      // Inisialisasi Pengaturan Personalisasi
+      // Init Settings
       document.getElementById('notifToggle').checked = settings.notifications;
       darkModeToggle.checked = settings.darkMode;
       contentPrefSelect.value = settings.contentPref;
@@ -355,7 +333,6 @@
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 3000);
       }
-
       document.getElementById('toastClose').addEventListener('click', () => toast.classList.remove('show'));
 
       function openModal(id) { document.getElementById(id).classList.add('active'); }
@@ -366,7 +343,6 @@
       document.getElementById('closeSettings').addEventListener('click', () => closeModal('settingsBackdrop'));
       document.getElementById('closeAbout').addEventListener('click', () => closeModal('aboutBackdrop'));
       document.getElementById('closeHistory').addEventListener('click', () => closeModal('historyBackdrop'));
-
       document.querySelectorAll('.modal-backdrop').forEach(el => {
         el.addEventListener('click', (e) => { if (e.target === el) el.classList.remove('active'); });
       });
@@ -400,28 +376,10 @@
         showToast('Pengaturan notifikasi disimpan');
       });
 
-      function saveSettings() {
-        localStorage.setItem('asm_settings', JSON.stringify(settings));
-      }
-
-      async function savePreferencesToServer() {
-        try {
-          await fetch('/api/stats/preferences', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ visitorId, preferences: settings })
-          });
-        } catch(e) {}
-      }
-
-      function triggerNotify(title, body) {
-        if (settings.notifications && Notification.permission === 'granted') {
-          new Notification(title, { body: body, icon: '⚡' });
-        }
-      }
+      function saveSettings() { localStorage.setItem('asm_settings', JSON.stringify(settings)); }
 
       // ========================================
-      // ANALISIS DATA & PEMBELAJARAN OTOMATIS
+      // SUPABASE INTEGRATION (ANALYTICS & LEARNING)
       // ========================================
       let visitorId = localStorage.getItem('asm_visitor_id');
       if (!visitorId) {
@@ -431,7 +389,17 @@
 
       const totalUsersEl = document.getElementById('totalUsers');
 
-      const recordVisit = async () => {
+      async function savePreferencesToServer() {
+        try {
+          await fetch('/api/stats/preferences', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ visitorId, preferences: settings })
+          });
+        } catch(e) { console.error('Pref save error:', e); }
+      }
+
+      async function recordVisit() {
         try {
           const res = await fetch('/api/stats/visit', {
             method: 'POST',
@@ -440,30 +408,34 @@
           });
           const data = await res.json();
           if (data.success && data.totalUsers !== undefined) totalUsersEl.textContent = data.totalUsers.toLocaleString('id-ID');
-        } catch (e) {}
-      };
+        } catch (e) { console.error('Visit record error:', e); }
+      }
 
-      const loadRecommendations = async () => {
+      async function loadRecommendations() {
         try {
           const res = await fetch(`/api/recommendations?visitorId=${visitorId}`);
           const data = await res.json();
           if (data.success && data.recommendedModel) modelSelect.value = data.recommendedModel;
-        } catch(e) {}
-      };
+        } catch(e) { console.error('Recom load error:', e); }
+      }
 
-      const logInteraction = async (model, category) => {
+      async function logInteraction(model, category) {
         try {
           await fetch('/api/stats/interaction', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ visitorId, model, category })
           });
-        } catch(e) {}
-      };
+        } catch(e) { console.error('Interact log error:', e); }
+      }
 
-      // ========================================
+      function triggerNotify(title, body) {
+        if (settings.notifications && Notification.permission === 'granted') {
+          new Notification(title, { body: body, icon: '⚡' });
+        }
+      }
+
       // PENCARIAN CERDAS
-      // ========================================
       searchHistory.addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase();
         renderHistory(query);
@@ -595,11 +567,9 @@
           copyBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
           copyBtn.onclick = () => copyBubbleText(copyBtn, msg.content);
 
-          if (msg.role === 'user') {
-            bubble.textContent = msg.content;
-          } else if (msg.isImage) {
-            bubble.innerHTML = msg.content;
-          } else {
+          if (msg.role === 'user') bubble.textContent = msg.content;
+          else if (msg.isImage) bubble.innerHTML = msg.content;
+          else {
             bubble.innerHTML = formatAIText(msg.content);
             if(window.Prism) Prism.highlightAllUnder(bubble);
           }
@@ -707,6 +677,14 @@
 
       newChatBtn.addEventListener('click', newChat);
       newChatTopBtn.addEventListener('click', newChat);
+
+      const toggleSidebar = () => {
+        sidebar.classList.toggle('open');
+        sidebarBackdrop.classList.toggle('active');
+      };
+      menuBtn.addEventListener('click', toggleSidebar);
+      sideClose.addEventListener('click', toggleSidebar);
+      sidebarBackdrop.addEventListener('click', toggleSidebar);
 
       async function sendMessage() {
         const text = chatInput.value.trim();
@@ -831,7 +809,7 @@
                 currentChat.messages.push({ role: 'ai', content: 'Tidak ada respons.' });
               }
             }
-            logInteraction(selectedModel, interactionCategory);
+            logInteraction(selectedModel, interactionCategory); // Log to Supabase
           } else {
             aiBubble.textContent = 'Error: ' + (data.error || 'Terjadi kesalahan');
             currentChat.messages.push({ role: 'ai', content: 'Error: ' + data.error });
@@ -882,6 +860,7 @@
         });
       }
       
+      // Init APIs
       recordVisit();
       loadRecommendations();
       renderHistory();
