@@ -23,11 +23,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 // ========================================
 // SUPABASE INITIALIZATION
 // ========================================
-const supabaseUrl = process.env.SUPABASE_URL || 'https://gyjdgcewyjaxcdzpzmoh.supabase.co';
-const supabaseKey = process.env.SUPABASE_ANON_KEY || 'sb_publishable_u8sIahtF6JGs00xjGTR1pg_3GQfmL2E';
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
-    console.error('❌ SUPABASE_URL dan SUPABASE_ANON_KEY harus diset di Environment Variables!');
+    console.error('❌ PERINGATAN: SUPABASE_URL atau SUPABASE_ANON_KEY belum diset di Environment Variables Vercel!');
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -112,7 +112,7 @@ app.post('/api/stats/visit', async (req, res) => {
     if (!visitorId) return res.status(400).json({ error: 'Visitor ID required' });
 
     try {
-        // Upsert visitor (Insert jika belum ada, abaikan jika sudah ada)
+        // Upsert visitor
         await supabase
             .from('visitors')
             .upsert({ visitor_id: visitorId }, { onConflict: 'visitor_id' });
@@ -185,7 +185,7 @@ app.get('/api/recommendations', async (req, res) => {
             .eq('visitor_id', visitorId)
             .single();
 
-        if (error || !userData || Object.keys(userData.models).length === 0) {
+        if (error || !userData || Object.keys(userData.models || {}).length === 0) {
             return res.json({ success: true, recommendedModel: null });
         }
 
@@ -194,7 +194,7 @@ app.get('/api/recommendations', async (req, res) => {
         const recommendedModel = sortedModels[0][0];
 
         // Cari topik paling sering dibahas
-        const sortedCategories = Object.entries(userData.categories).sort((a, b) => b[1] - a[1]);
+        const sortedCategories = Object.entries(userData.categories || {}).sort((a, b) => b[1] - a[1]);
         const recommendedCategory = sortedCategories.length > 0 ? sortedCategories[0][0] : null;
 
         res.json({ success: true, recommendedModel, recommendedCategory });
@@ -215,7 +215,7 @@ app.post('/api/stats/preferences', async (req, res) => {
             .from('visitors')
             .upsert({ visitor_id: visitorId }, { onConflict: 'visitor_id' });
 
-        // Ambil preferensi lama, lalu gabungkan dengan yang baru
+        // Ambil preferensi lama
         const { data: currentData } = await supabase
             .from('user_data')
             .select('preferences')
