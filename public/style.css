@@ -1195,3 +1195,71 @@ input:checked + .slider:before {
   background: #FFA500;
   color: #000;
 }
+
+/* ========================================
+   PRIVACY POLICY MODAL STYLES
+   ======================================== */
+
+.modal-lg {
+    max-width: 550px; /* Lebar modal privasi lebih besar */
+}
+
+.privacy-body {
+    text-align: left;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.privacy-icon {
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.privacy-updated {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.privacy-body h3 {
+    font-size: 1.1rem;
+    margin-top: 20px;
+    margin-bottom: 8px;
+    padding-left: 10px;
+    border-left: 4px solid var(--primary);
+}
+
+.privacy-body p {
+    font-size: 0.9rem;
+    color: #444;
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+[data-theme="dark"] .privacy-body p {
+    color: #bbb;
+}
+
+.privacy-body ul {
+    padding-left: 20px;
+    margin-bottom: 15px;
+}
+
+.privacy-body ul li {
+    font-size: 0.85rem;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+[data-theme="dark"] .privacy-body ul li {
+    color: #ccc;
+}
+
+.privacy-body ul li strong {
+    color: var(--black);
+}
+
