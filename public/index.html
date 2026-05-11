@@ -56,6 +56,13 @@
         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1-1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
         <span>Pengaturan</span>
       </button>
+      
+      <!-- Tombol Privasi Baru -->
+      <button class="side-bottom-btn" id="privacyBtn" type="button">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Privasi</span>
+      </button>
+
       <button class="side-bottom-btn" id="aboutBtn" type="button">
         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
         <span>Tentang</span>
@@ -192,6 +199,49 @@
           </select>
         </div>
         <p class="setting-desc">Sistem akan mempelajari preferensimu dan menyesuaikan rekomendasi otomatis.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Kebijakan Privasi & Keamanan (Baru) -->
+  <div class="modal-backdrop" id="privacyBackdrop">
+    <div class="modal-box modal-lg">
+      <div class="modal-header">
+        <span>Kebijakan Privasi & Keamanan</span>
+        <button class="modal-close-btn" id="closePrivacy">✕</button>
+      </div>
+      <div class="modal-body privacy-body">
+        <div class="privacy-icon">🛡️</div>
+        <p class="privacy-updated">Terakhir diperbarui: 24 Mei 2024</p>
+        
+        <h3>1. Data yang Kami Kumpulkan</h3>
+        <p>Kami menghormati privasi Anda. Satu-satunya data yang kami kumpulkan adalah:</p>
+        <ul>
+          <li><strong>ID Pengunjung (Visitor ID):</strong> ID acak yang dibuat otomatis oleh browser Anda untuk membedakan pengguna (tanpa informasi pribadi).</li>
+          <li><strong>Preferensi & Interaksi:</strong> Model AI yang sering Anda gunakan dan kategori pertanyaan (contoh: Koding, Gambar) untuk memberikan rekomendasi yang lebih baik.</li>
+        </ul>
+
+        <h3>2. Data yang TIDAK Kami Kumpulkan</h3>
+        <ul>
+          <li><strong>Riwayat Obrolan:</strong> Semua percakapan Anda <strong>disimpan 100% di perangkat lokal (Browser)</strong> menggunakan LocalStorage. Kami tidak pernah mengirim atau menyimpan teks obrolan Anda ke server database kami.</li>
+          <li><strong>Data Pribadi:</strong> Kami tidak meminta nama, email, nomor telepon, atau alamat IP yang dilacak secara persisten.</li>
+        </ul>
+
+        <h3>3. Keamanan Data</h3>
+        <p>Kami menerapkan protokol keamanan berlapis:</p>
+        <ul>
+          <li><strong>Enkripsi HTTPS:</strong> Semua data yang dikirim antara browser dan server dienkripsi menggunakan SSL/TLS.</li>
+          <li><strong>Supabase RLS:</strong> Database menggunakan Row Level Security untuk mencegah akses tidak sah.</li>
+          <li><strong>Rate Limiting:</strong> Sistem kami memblokir permintaan berlebihan (spam/DDoS) untuk menjaga kestabilan dan keamanan layanan.</li>
+          <li><strong>Sanitasi Input:</strong> Semua teks yang masuk dibersihkan dari kode berbahaya (XSS) sebelum diproses atau ditampilkan.</li>
+        </ul>
+
+        <h3>4. Hak Anda</h3>
+        <p>Anda memiliki kendali penuh atas data Anda. Anda dapat:</p>
+        <ul>
+          <li>Menghapus riwayat obrolan lokal kapan saja melalui menu Riwayat.</li>
+          <li>Merubah atau menghapus preferensi yang tersimpan melalui menu Pengaturan.</li>
+        </ul>
       </div>
     </div>
   </div>
@@ -340,9 +390,12 @@
 
       document.getElementById('settingsBtn').addEventListener('click', () => openModal('settingsBackdrop'));
       document.getElementById('aboutBtn').addEventListener('click', () => openModal('aboutBackdrop'));
+      document.getElementById('privacyBtn').addEventListener('click', () => openModal('privacyBackdrop')); // Event Tombol Privasi
       document.getElementById('closeSettings').addEventListener('click', () => closeModal('settingsBackdrop'));
       document.getElementById('closeAbout').addEventListener('click', () => closeModal('aboutBackdrop'));
+      document.getElementById('closePrivacy').addEventListener('click', () => closeModal('privacyBackdrop')); // Event Tutup Privasi
       document.getElementById('closeHistory').addEventListener('click', () => closeModal('historyBackdrop'));
+      
       document.querySelectorAll('.modal-backdrop').forEach(el => {
         el.addEventListener('click', (e) => { if (e.target === el) el.classList.remove('active'); });
       });
@@ -772,6 +825,15 @@
           }
 
           const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+          
+          // Penanganan Error dari Rate Limiter Backend (Keamanan)
+          if(response.status === 429) {
+             const errData = await response.json();
+             aiBubble.textContent = errData.error || '🚫 Terlalu banyak permintaan. Coba lagi nanti.';
+             currentChat.messages.push({ role: 'ai', content: 'Rate limited.' });
+             throw new Error('Rate limited');
+          }
+
           const data = await response.json();
           
           if (data.success) {
@@ -815,8 +877,10 @@
             currentChat.messages.push({ role: 'ai', content: 'Error: ' + data.error });
           }
         } catch (err) {
-          aiBubble.textContent = 'Gagal terhubung ke server.';
-          currentChat.messages.push({ role: 'ai', content: 'Gagal terhubung ke server.' });
+          if(err.message !== 'Rate limited') {
+             aiBubble.textContent = 'Gagal terhubung ke server.';
+             currentChat.messages.push({ role: 'ai', content: 'Gagal terhubung ke server.' });
+          }
         }
 
         saveChats();
