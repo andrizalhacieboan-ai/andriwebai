@@ -87,26 +87,28 @@
     <main class="main-content">
       <section class="welcome-section" id="hero">
         <div class="logo-container">
-          <div class="logo">さ</div>
-          <div class="welcome-info">
+          
+          <div class="logo scroll-reveal">さ</div>
+          
+          <div class="welcome-info scroll-reveal" style="transition-delay: 0.1s;">
             <span class="welcome-text">ASM - AI</span>
             <p class="welcome-desc">Platform AI cerdas untuk masa depan. Jelajahi inovasi, dapatkan wawasan, dan wujudkan ide kamu dengan teknologi AI terkini</p>
           </div>
           
           <div class="quick-cards">
-            <div class="quick-card" data-category="coding" onclick="fillInput('Buatkan kode JavaScript untuk fetch API')">
+            <div class="quick-card scroll-reveal" style="transition-delay: 0.2s;" data-category="coding" onclick="fillInput('Buatkan kode JavaScript untuk fetch API')">
               <span class="qc-icon">💻</span>
               <span class="qc-text">Tulis Kode</span>
             </div>
-            <div class="quick-card" data-category="knowledge" onclick="fillInput('Jelaskan konsep machine learning dengan bahasa sederhana')">
+            <div class="quick-card scroll-reveal" style="transition-delay: 0.3s;" data-category="knowledge" onclick="fillInput('Jelaskan konsep machine learning dengan bahasa sederhana')">
               <span class="qc-icon">💡</span>
               <span class="qc-text">Pelajari Konsep</span>
             </div>
-            <div class="quick-card" data-category="image" onclick="document.getElementById('modelSelect').value='aibanana'; fillInput('A beautiful cyberpunk city at night')">
+            <div class="quick-card scroll-reveal" style="transition-delay: 0.4s;" data-category="image" onclick="document.getElementById('modelSelect').value='aibanana'; fillInput('A beautiful cyberpunk city at night')">
               <span class="qc-icon">🎨</span>
               <span class="qc-text">Buat Gambar</span>
             </div>
-            <div class="quick-card" data-category="planning" onclick="fillInput('Bantu saya merencanakan jadwal belajar harian')">
+            <div class="quick-card scroll-reveal" style="transition-delay: 0.5s;" data-category="planning" onclick="fillInput('Bantu saya merencanakan jadwal belajar harian')">
               <span class="qc-icon">📅</span>
               <span class="qc-text">Buat Rencana</span>
             </div>
@@ -238,6 +240,21 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       
+      // ========================================
+      // SMOOTH SCROLL REVEAL ANIMATION
+      // ========================================
+      const revealElements = document.querySelectorAll('.scroll-reveal');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      revealElements.forEach(el => observer.observe(el));
+
+      // Share URL Logic
       const urlParams = new URLSearchParams(window.location.search);
       const shareData = urlParams.get('s');
       if (shareData) {
@@ -430,10 +447,7 @@
         try {
           const res = await fetch(`/api/recommendations?visitorId=${visitorId}`);
           const data = await res.json();
-          if (data.success && data.recommendedModel) {
-             // Pembelajaran Otomatis: Set model di dropdown berdasarkan yang paling sering dipakai
-             modelSelect.value = data.recommendedModel;
-          }
+          if (data.success && data.recommendedModel) modelSelect.value = data.recommendedModel;
         } catch(e) {}
       };
 
@@ -522,7 +536,6 @@
         const reversed = [...chats].reverse();
         
         reversed.forEach(chat => {
-          // Pencarian Cerdas: Filter berdasarkan judul atau isi pesan
           if (searchQuery) {
             const inTitle = chat.title.toLowerCase().includes(searchQuery);
             const inMessages = chat.messages.some(m => m.content.toLowerCase().includes(searchQuery));
@@ -543,18 +556,12 @@
           const shareBtn = document.createElement('button');
           shareBtn.className = 'hist-act-btn';
           shareBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>';
-          shareBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            shareChat(chat.id);
-          });
+          shareBtn.addEventListener('click', (e) => { e.stopPropagation(); shareChat(chat.id); });
 
           const delBtn = document.createElement('button');
           delBtn.className = 'hist-act-btn del';
           delBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
-          delBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            deleteChat(chat.id);
-          });
+          delBtn.addEventListener('click', (e) => { e.stopPropagation(); deleteChat(chat.id); });
 
           actions.appendChild(shareBtn);
           actions.appendChild(delBtn);
@@ -710,7 +717,7 @@
         sendBtn.disabled = true;
 
         let finalText = text;
-        let interactionCategory = 'general'; // Default category for learning
+        let interactionCategory = 'general';
 
         if (attachedFileData) {
           if (attachedFileData.type === 'image') {
@@ -723,7 +730,6 @@
           removeFile();
         }
 
-        // Analisis Konteks Sederhana untuk Pembelajaran
         if (text.toLowerCase().includes('kode') || text.toLowerCase().includes('script')) interactionCategory = 'coding';
         else if (text.toLowerCase().includes('gambar') || text.toLowerCase().includes('buat visual')) interactionCategory = 'image';
         else if (text.toLowerCase().includes('rencana') || text.toLowerCase().includes('jadwal')) interactionCategory = 'planning';
@@ -825,7 +831,6 @@
                 currentChat.messages.push({ role: 'ai', content: 'Tidak ada respons.' });
               }
             }
-            // Kirim data interaksi ke server untuk Analisis & Pembelajaran Otomatis
             logInteraction(selectedModel, interactionCategory);
           } else {
             aiBubble.textContent = 'Error: ' + (data.error || 'Terjadi kesalahan');
@@ -877,9 +882,8 @@
         });
       }
       
-      // Inisialisasi Awal
       recordVisit();
-      loadRecommendations(); // Muat rekomendasi AI saat aplikasi dibuka
+      loadRecommendations();
       renderHistory();
     });
   </script>
