@@ -229,12 +229,14 @@ a {
   padding: 16px 20px;
   border-top: var(--border-thick);
   display: flex;
+  flex-wrap: wrap; /* Biar tombol dan counter tidak saling dorong */
   gap: 8px;
   background: #f1f1f1;
 }
 
 .side-bottom-btn {
   flex: 1;
+  min-width: 0; /* Cegah konten melebihi flex container */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -250,6 +252,26 @@ a {
 
 .side-bottom-btn:hover {
   background: var(--primary);
+}
+
+.user-counter {
+  flex: 1 1 100%; /* Counter akan mengambil 1 baris penuh di atas tombol */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  background: var(--white);
+  border: var(--border-thin);
+  border-radius: var(--radius);
+  font-weight: 700;
+  font-size: 0.9rem;
+  box-shadow: var(--shadow-hard-sm);
+  color: var(--black);
+}
+
+.user-counter svg {
+  color: var(--primary);
 }
 
 .main-wrapper {
@@ -350,6 +372,8 @@ a {
   flex-direction: column;
 }
 
+/* ========== WELCOME SECTION (Compact) ========== */
+
 .welcome-section {
   flex: 1;
   display: flex;
@@ -365,7 +389,6 @@ a {
   align-items: center;
   gap: 16px;
 }
-
 
 .logo {
   width: 56px;
@@ -411,37 +434,52 @@ a {
   line-height: 1.45;
 }
 
-
-.ai-cards {
+.quick-cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 8px;
   width: 100%;
-  max-width: 400px;
-  margin-top: 10px;
+  max-width: 340px;
+  margin-top: 14px;
 }
 
-.ai-card {
-  padding: 12px;
+.quick-card {
+  padding: 10px 8px;
   border: var(--border-thin);
   border-radius: var(--radius);
   background: var(--white);
   font-weight: 700;
   text-align: center;
   cursor: pointer;
-  box-shadow: var(--shadow-hard-sm);
-  transition: var(--transition);
+  box-shadow: 2px 2px 0 var(--black);
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 
-.ai-card:hover {
-  background: var(--bg-color);
-}
-
-.ai-card.active {
+.quick-card:hover {
   background: var(--primary);
-  border: var(--border-thick);
-  box-shadow: var(--shadow-hard);
+  transform: translateY(-2px);
+  box-shadow: 4px 4px 0 var(--black);
 }
+
+.quick-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.qc-icon {
+  font-size: 1.15rem;
+}
+
+.qc-text {
+  font-size: 0.72rem;
+  letter-spacing: -0.01em;
+}
+
+/* ========== END WELCOME SECTION ========== */
 
 .messages-container {
   padding: 20px;
@@ -840,6 +878,10 @@ input:checked + .slider:before {
   box-shadow: var(--shadow-hard-sm);
 }
 
+.full-btn.primary {
+  background: var(--primary);
+}
+
 .danger {
   background: var(--primary);
 }
@@ -854,7 +896,6 @@ input:checked + .slider:before {
   background: #ff4d4d;
   color: var(--white);
 }
-
 
 .chat-bubble-wrapper {
   position: relative;
@@ -964,10 +1005,6 @@ input:checked + .slider:before {
 .token.operator { color: #ff79c6; }
 .token.punctuation { color: #f8f8f2; }
 
-.full-btn.primary {
-  background: var(--primary);
-}
-
 .shared-container {
   max-width: 800px;
   margin: 40px auto;
@@ -1042,96 +1079,4 @@ input:checked + .slider:before {
 .shared-footer:hover {
   background: #FFA500;
   color: #000;
-}
-
-.side-bottom-menu {
-  padding: 16px 20px;
-  border-top: var(--border-thick);
-  display: flex;
-  flex-wrap: wrap; /* Biar tombol dan counter tidak saling dorong */
-  gap: 8px;
-  background: #f1f1f1;
-}
-
-.side-bottom-btn {
-  flex: 1;
-  min-width: 0; /* Cegah konten melebihi flex container */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px;
-  background: var(--white);
-  border: var(--border-thin);
-  border-radius: var(--radius);
-  font-weight: 700;
-  font-size: 0.9rem;
-  box-shadow: var(--shadow-hard-sm);
-}
-
-.user-counter {
-  flex: 1 1 100%; /* Counter akan mengambil 1 baris penuh di atas tombol */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px;
-  background: var(--white);
-  border: var(--border-thin);
-  border-radius: var(--radius);
-  font-weight: 700;
-  font-size: 0.9rem;
-  box-shadow: var(--shadow-hard-sm);
-  color: var(--black);
-}
-
-.user-counter svg {
-  color: var(--primary);
-}
-
-
-.quick-cards {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  width: 100%;
-  max-width: 340px;
-  margin-top: 14px;
-}
-
-.quick-card {
-  padding: 10px 8px;
-  border: var(--border-thin);
-  border-radius: var(--radius);
-  background: var(--white);
-  font-weight: 700;
-  text-align: center;
-  cursor: pointer;
-  box-shadow: 2px 2px 0 var(--black);
-  transition: all 0.2s ease-in-out;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-
-.quick-card:hover {
-  background: var(--primary);
-  transform: translateY(-2px);
-  box-shadow: 4px 4px 0 var(--black);
-}
-
-.quick-card:active {
-  transform: translate(2px, 2px);
-  box-shadow: none;
-}
-
-.qc-icon {
-  font-size: 1.15rem;
-}
-
-.qc-text {
-  font-size: 0.72rem;
-  letter-spacing: -0.01em;
 }
