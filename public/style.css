@@ -12,6 +12,18 @@
   --transition: all 0.2s ease-in-out;
 }
 
+/* ========================================
+   PERSONALISASI: DARK MODE VARIABLES
+   ======================================== */
+[data-theme="dark"] {
+  --primary: #E59400;
+  --black: #e0e0e0;
+  --white: #1e1e1e;
+  --bg-color: #121212;
+  --shadow-hard: 5px 5px 0px #000000;
+  --shadow-hard-sm: 3px 3px 0px #000000;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -26,6 +38,7 @@ body {
   display: flex;
   height: 100vh;
   width: 100vw;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 button {
@@ -33,6 +46,7 @@ button {
   font-family: var(--font-brutal);
   transition: var(--transition);
   background: var(--white);
+  color: var(--black);
 }
 
 button:active {
@@ -57,7 +71,7 @@ a {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.6);
   z-index: 40;
   opacity: 0;
   visibility: hidden;
@@ -81,7 +95,7 @@ a {
   display: flex;
   flex-direction: column;
   transform: translateX(-100%);
-  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), background-color 0.3s ease;
 }
 
 .sidebar.open {
@@ -143,6 +157,9 @@ a {
 
 .side-actions {
   padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 #newChatBtn {
@@ -158,6 +175,32 @@ a {
   box-shadow: var(--shadow-hard);
   font-weight: 700;
   font-size: 1rem;
+}
+
+/* Pencarian Cerdas */
+.search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--bg-color);
+  border: var(--border-thin);
+  border-radius: var(--radius);
+}
+
+.search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-brutal);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--black);
+}
+
+.search-input::placeholder {
+  color: #777;
 }
 
 .side-history {
@@ -229,20 +272,20 @@ a {
   padding: 16px 20px;
   border-top: var(--border-thick);
   display: flex;
-  flex-wrap: wrap; /* Biar tombol dan counter tidak saling dorong */
+  flex-wrap: wrap;
   gap: 8px;
-  background: #f1f1f1;
+  background: var(--white);
 }
 
 .side-bottom-btn {
   flex: 1;
-  min-width: 0; /* Cegah konten melebihi flex container */
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   padding: 10px;
-  background: var(--white);
+  background: var(--bg-color);
   border: var(--border-thin);
   border-radius: var(--radius);
   font-weight: 700;
@@ -255,13 +298,13 @@ a {
 }
 
 .user-counter {
-  flex: 1 1 100%; /* Counter akan mengambil 1 baris penuh di atas tombol */
+  flex: 1 1 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   padding: 10px;
-  background: var(--white);
+  background: var(--bg-color);
   border: var(--border-thin);
   border-radius: var(--radius);
   font-weight: 700;
@@ -434,6 +477,10 @@ a {
   line-height: 1.45;
 }
 
+[data-theme="dark"] .welcome-desc {
+  color: #aaa;
+}
+
 .quick-cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -528,21 +575,12 @@ a {
   animation: blink 1.4s infinite both;
 }
 
-.loading-dots span:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.loading-dots span:nth-child(3) {
-  animation-delay: 0.4s;
-}
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
 
 @keyframes blink {
-  0%, 80%, 100% {
-    opacity: 0.2;
-  }
-  40% {
-    opacity: 1;
-  }
+  0%, 80%, 100% { opacity: 0.2; }
+  40% { opacity: 1; }
 }
 
 .chat-container {
@@ -588,6 +626,7 @@ a {
   font-weight: 700;
   font-size: 0.9rem;
   background: var(--bg-color);
+  color: var(--black);
   outline: none;
   cursor: pointer;
 }
@@ -607,6 +646,7 @@ a {
   font-weight: 600;
   padding: 12px 0 12px 0;
   background: transparent;
+  color: var(--black);
   max-height: 150px;
   line-height: 1.5;
 }
@@ -633,7 +673,7 @@ a {
 }
 
 .attach-btn {
-  background: #eee;
+  background: var(--bg-color);
   box-shadow: var(--shadow-hard-sm);
 }
 
@@ -770,6 +810,10 @@ a {
   line-height: 1.4;
 }
 
+[data-theme="dark"] .setting-desc {
+  color: #aaa;
+}
+
 .switch {
   position: relative;
   display: inline-block;
@@ -882,10 +926,6 @@ input:checked + .slider:before {
   background: var(--primary);
 }
 
-.danger {
-  background: var(--primary);
-}
-
 .danger-outline {
   background: var(--white);
   color: #ff4d4d;
@@ -904,7 +944,7 @@ input:checked + .slider:before {
 }
 
 .chat-bubble-wrapper .chat-bubble {
-  margin-bottom: 0; /* Hapus margin bawaan bubble */
+  margin-bottom: 0;
 }
 
 .copy-bubble-btn {
@@ -925,6 +965,11 @@ input:checked + .slider:before {
   box-shadow: 2px 2px 0 var(--black);
 }
 
+[data-theme="dark"] .copy-bubble-btn {
+  background: rgba(30, 30, 30, 0.8);
+  color: #e0e0e0;
+}
+
 .chat-bubble-wrapper:hover .copy-bubble-btn {
   opacity: 1;
 }
@@ -934,12 +979,10 @@ input:checked + .slider:before {
   box-shadow: none;
 }
 
-/* Posisi tombol copy di bubble user */
 .chat-bubble-wrapper .chat-bubble.user + .copy-bubble-btn {
   left: -40px;
   right: auto;
 }
-
 
 .code-block-wrapper {
   background: #2d2d2d;
@@ -996,7 +1039,6 @@ input:checked + .slider:before {
   color: #f8f8f2;
 }
 
-/* Override beberapa warna Prism agar lebih brutalis/sesuai tema */
 .token.keyword { color: #ff79c6; }
 .token.string { color: #f1fa8c; }
 .token.comment { color: #6272a4; }
