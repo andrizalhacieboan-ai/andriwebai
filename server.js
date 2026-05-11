@@ -3,6 +3,8 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createClient } from '@supabase/supabase-js';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 
 import glm5 from './lib/glm5.js';
 import gemini from './lib/gemini.js';
@@ -15,10 +17,31 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// ========================================
+// SECURITY MIDDLEWARE
+// ========================================
+// Helm melindungi dari kerentanan web dengan mengatur HTTP header dengan aman
+app.use(helmet({
+    contentSecurityPolicy: false, // Nonaktifkan jika mengganggu script external (Prism/Fonts)
+    crossOriginEmbedderPolicy: false
+}));
+
+// Rate Limiter: Mencegah Spam & DDoS (Max 30 request per 1 menit per IP)
+const apiLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 menit
+    max: 30,
+    message: { success: false, error: 'Terlalu banyak permintaan. Coba lagi dalam beberapa saat.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
 app.use(cors());
 app.use(express.json());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Terapkan Rate Limiter khusus pada rute API
+app.use('/api/', apiLimiter);
 
 // ========================================
 // SUPABASE INITIALIZATION
@@ -27,7 +50,7 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
-    console.error('❌ PERINGATAN: SUPABASE_URL atau SUPABASE_ANON_KEY belum diset di Environment Variables Vercel!');
+    console.error('❌ PERINGATAN: SUPABASE_URL atau SUPABASE_ANON_KEY belum diset!');
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -97,7 +120,7 @@ app.post('/api/image/banana', async (req, res) => {
     } catch (error) {
         console.error('AI Banana Error:', error.message);
         if (error.message.includes('free quota has been used up') || error.message.includes('429')) {
-            return res.status(429).json({ success: false, error: '🚫 Kuota gratis AI Banana hari ini sudah habis.' });
+            return res.status(429).json({ success: false, error: '🚫 Kuota gratis AI Banana habis.' });
         }
         res.status(500).json({ success: false, error: error.message });
     }
@@ -110,20 +133,10 @@ app.post('/api/image/banana', async (req, res) => {
 app.post('/api/stats/visit', async (req, res) => {
     const { visitorId } = req.body;
     if (!visitorId) return res.status(400).json({ error: 'Visitor ID required' });
-
     try {
-        // Upsert visitor
-        await supabase
-            .from('visitors')
-            .upsert({ visitor_id: visitorId }, { onConflict: 'visitor_id' });
-
-        // Hitung total pengunjung
-        const { count, error: countError } = await supabase
-            .from('visitors')
-            .select('*', { count: 'exact', head: true });
-
+        await supabase.from('visitors').upsert({ visitor_id: visitorId }, { onConflict: 'visitor_id' });
+        const { count, error: countError } = await supabase.from('visitors').select('*', { count: 'exact', head: true });
         if (countError) throw countError;
-
         res.json({ success: true, totalUsers: count || 0 });
     } catch (err) {
         console.error('Visitor count error:', err);
@@ -131,41 +144,17 @@ app.post('/api/stats/visit', async (req, res) => {
     }
 });
 
-// Mencatat interaksi untuk Pembelajaran Otomatis
 app.post('/api/stats/interaction', async (req, res) => {
     const { visitorId, model, category } = req.body;
     if (!visitorId) return res.status(400).json({ error: 'Visitor ID required' });
-
     try {
-        // Pastikan visitor ada di tabel visitors (Foreign Key constraint)
-        await supabase
-            .from('visitors')
-            .upsert({ visitor_id: visitorId }, { onConflict: 'visitor_id' });
-
-        // Ambil data user saat ini
-        const { data: currentData } = await supabase
-            .from('user_data')
-            .select('models, categories')
-            .eq('visitor_id', visitorId)
-            .single();
-
+        await supabase.from('visitors').upsert({ visitor_id: visitorId }, { onConflict: 'visitor_id' });
+        const { data: currentData } = await supabase.from('user_data').select('models, categories').eq('visitor_id', visitorId).single();
         const currentModels = currentData?.models || {};
         const currentCategories = currentData?.categories || {};
-
-        // Update count
         if (model) currentModels[model] = (currentModels[model] || 0) + 1;
         if (category) currentCategories[category] = (currentCategories[category] || 0) + 1;
-
-        // Upsert kembali ke database
-        await supabase
-            .from('user_data')
-            .upsert({
-                visitor_id: visitorId,
-                models: currentModels,
-                categories: currentCategories,
-                updated_at: new Date().toISOString()
-            }, { onConflict: 'visitor_id' });
-
+        await supabase.from('user_data').upsert({ visitor_id: visitorId, models: currentModels, categories: currentCategories, updated_at: new Date().toISOString() }, { onConflict: 'visitor_id' });
         res.json({ success: true });
     } catch (err) {
         console.error('Interaction log error:', err);
@@ -173,66 +162,28 @@ app.post('/api/stats/interaction', async (req, res) => {
     }
 });
 
-// Memberikan rekomendasi berdasarkan Analisis Data
 app.get('/api/recommendations', async (req, res) => {
     const { visitorId } = req.query;
     if (!visitorId) return res.json({ success: true, recommendedModel: null });
-
     try {
-        const { data: userData, error } = await supabase
-            .from('user_data')
-            .select('models, categories')
-            .eq('visitor_id', visitorId)
-            .single();
-
-        if (error || !userData || Object.keys(userData.models || {}).length === 0) {
-            return res.json({ success: true, recommendedModel: null });
-        }
-
-        // Cari model paling sering dipakai
+        const { data: userData, error } = await supabase.from('user_data').select('models, categories').eq('visitor_id', visitorId).single();
+        if (error || !userData || Object.keys(userData.models || {}).length === 0) return res.json({ success: true, recommendedModel: null });
         const sortedModels = Object.entries(userData.models).sort((a, b) => b[1] - a[1]);
-        const recommendedModel = sortedModels[0][0];
-
-        // Cari topik paling sering dibahas
-        const sortedCategories = Object.entries(userData.categories || {}).sort((a, b) => b[1] - a[1]);
-        const recommendedCategory = sortedCategories.length > 0 ? sortedCategories[0][0] : null;
-
-        res.json({ success: true, recommendedModel, recommendedCategory });
+        res.json({ success: true, recommendedModel: sortedModels[0][0] });
     } catch (err) {
         console.error('Recommendation error:', err);
         res.status(500).json({ success: false });
     }
 });
 
-// Menyimpan Personalisasi Pengguna
 app.post('/api/stats/preferences', async (req, res) => {
     const { visitorId, preferences } = req.body;
     if (!visitorId) return res.status(400).json({ error: 'Visitor ID required' });
-
     try {
-        // Pastikan visitor ada
-        await supabase
-            .from('visitors')
-            .upsert({ visitor_id: visitorId }, { onConflict: 'visitor_id' });
-
-        // Ambil preferensi lama
-        const { data: currentData } = await supabase
-            .from('user_data')
-            .select('preferences')
-            .eq('visitor_id', visitorId)
-            .single();
-
+        await supabase.from('visitors').upsert({ visitor_id: visitorId }, { onConflict: 'visitor_id' });
+        const { data: currentData } = await supabase.from('user_data').select('preferences').eq('visitor_id', visitorId).single();
         const mergedPreferences = { ...(currentData?.preferences || {}), ...preferences };
-
-        // Upsert preferensi
-        await supabase
-            .from('user_data')
-            .upsert({
-                visitor_id: visitorId,
-                preferences: mergedPreferences,
-                updated_at: new Date().toISOString()
-            }, { onConflict: 'visitor_id' });
-
+        await supabase.from('user_data').upsert({ visitor_id: visitorId, preferences: mergedPreferences, updated_at: new Date().toISOString() }, { onConflict: 'visitor_id' });
         res.json({ success: true });
     } catch (err) {
         console.error('Preferences save error:', err);
@@ -246,9 +197,7 @@ app.get('*', (req, res) => {
 
 if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => {
-        console.log(`🚀 ASM AI Server running on http://localhost:${PORT}`);
-    });
+    app.listen(PORT, () => console.log(`🚀 ASM AI Server running on http://localhost:${PORT}`));
 }
 
 export default app;
