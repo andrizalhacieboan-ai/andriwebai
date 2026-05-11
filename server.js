@@ -191,6 +191,55 @@ app.post('/api/stats/preferences', async (req, res) => {
     }
 });
 
+app.get('/api/stats/dashboard', async (req, res) => {
+    try {
+        // 1. Hitung Total Pengunjung
+        const { count: totalUsers, error: userError } = await supabase
+            .from('visitors')
+            .select('*', { count: 'exact', head: true });
+        
+        if (userError) throw userError;
+
+        // 2. Ambil semua data interaksi untuk diagregasi
+        const { data: userDataArray, error: dataError } = await supabase
+            .from('user_data')
+            .select('models, categories');
+            
+        if (dataError) throw dataError;
+
+        let modelStats = {};
+        let categoryStats = {};
+        let totalInteractions = 0;
+
+        // Loop melalui setiap pengguna untuk menjumlahkan interaksi global
+        userDataArray.forEach(user => {
+            if (user.models) {
+                Object.entries(user.models).forEach(([key, value]) => {
+                    modelStats[key] = (modelStats[key] || 0) + value;
+                    totalInteractions += value;
+                });
+            }
+            if (user.categories) {
+                Object.entries(user.categories).forEach(([key, value]) => {
+                    categoryStats[key] = (categoryStats[key] || 0) + value;
+                });
+            }
+        });
+
+        res.json({ 
+            success: true, 
+            totalUsers: totalUsers || 0, 
+            totalInteractions, 
+            modelStats, 
+            categoryStats 
+        });
+
+    } catch (err) {
+        console.error('Dashboard error:', err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
