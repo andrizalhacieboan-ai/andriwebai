@@ -52,12 +52,18 @@
         <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         <span><span id="totalUsers">0</span> Pengguna</span>
       </div>
+      
+      <!-- Tombol Analitik Baru -->
+      <button class="side-bottom-btn" id="analyticsBtn" type="button">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+        <span>Analitik</span>
+      </button>
+
       <button class="side-bottom-btn" id="settingsBtn" type="button">
         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1-1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
         <span>Pengaturan</span>
       </button>
       
-      <!-- Tombol Privasi Baru -->
       <button class="side-bottom-btn" id="privacyBtn" type="button">
         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         <span>Privasi</span>
@@ -164,6 +170,43 @@
     <button class="toast-close" id="toastClose">✕</button>
   </div>
 
+  <!-- Modal Analitik & Laporan (Baru) -->
+  <div class="modal-backdrop" id="analyticsBackdrop">
+    <div class="modal-box modal-lg">
+      <div class="modal-header">
+        <span>Analitik & Laporan</span>
+        <button class="modal-close-btn" id="closeAnalytics">✕</button>
+      </div>
+      <div class="modal-body analytics-body">
+        <div class="analytics-cards">
+          <div class="analytic-card">
+            <div class="analytic-val" id="dashTotalUsers">0</div>
+            <div class="analytic-label">Total Pengunjung</div>
+          </div>
+          <div class="analytic-card">
+            <div class="analytic-val" id="dashTotalInteractions">0</div>
+            <div class="analytic-label">Total Interaksi AI</div>
+          </div>
+        </div>
+
+        <div class="chart-section">
+          <h3>Kinerja Model AI</h3>
+          <div id="modelChart" class="chart-bars"></div>
+        </div>
+
+        <div class="chart-section">
+          <h3>Kategori Pengguna</h3>
+          <div id="categoryChart" class="chart-bars"></div>
+        </div>
+
+        <button class="full-btn primary" id="downloadReportBtn" style="margin-top: 20px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 8px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Unduh Laporan (CSV)
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-backdrop" id="settingsBackdrop">
     <div class="modal-box">
       <div class="modal-header">
@@ -203,7 +246,6 @@
     </div>
   </div>
 
-  <!-- Modal Kebijakan Privasi & Keamanan (Baru) -->
   <div class="modal-backdrop" id="privacyBackdrop">
     <div class="modal-box modal-lg">
       <div class="modal-header">
@@ -212,12 +254,12 @@
       </div>
       <div class="modal-body privacy-body">
         <div class="privacy-icon">🛡️</div>
-        <p class="privacy-updated">Terakhir diperbarui: 24 Mei 2024</p>
+        <p class="privacy-updated">Terakhir diperbarui: 11 Mei 2026</p>
         
         <h3>1. Data yang Kami Kumpulkan</h3>
         <p>Kami menghormati privasi Anda. Satu-satunya data yang kami kumpulkan adalah:</p>
         <ul>
-          <li><strong>ID Pengunjung (Visitor ID):</strong> ID acak yang dibuat otomatis oleh browser Anda untuk membedakan pengguna (tanpa informasi pribadi).</li>
+          <li><strong>ID Pengunjung:</strong> ID acak yang dibuat otomatis oleh browser Anda untuk membedakan pengguna (tanpa informasi pribadi).</li>
           <li><strong>Preferensi & Interaksi:</strong> Model AI yang sering Anda gunakan dan kategori pertanyaan (contoh: Koding, Gambar) untuk memberikan rekomendasi yang lebih baik.</li>
         </ul>
 
@@ -385,15 +427,20 @@
       }
       document.getElementById('toastClose').addEventListener('click', () => toast.classList.remove('show'));
 
-      function openModal(id) { document.getElementById(id).classList.add('active'); }
+      function openModal(id) { 
+        document.getElementById(id).classList.add('active'); 
+        if(id === 'analyticsBackdrop') loadDashboard(); // Load data saat modal dibuka
+      }
       function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
       document.getElementById('settingsBtn').addEventListener('click', () => openModal('settingsBackdrop'));
       document.getElementById('aboutBtn').addEventListener('click', () => openModal('aboutBackdrop'));
-      document.getElementById('privacyBtn').addEventListener('click', () => openModal('privacyBackdrop')); // Event Tombol Privasi
+      document.getElementById('privacyBtn').addEventListener('click', () => openModal('privacyBackdrop'));
+      document.getElementById('analyticsBtn').addEventListener('click', () => openModal('analyticsBackdrop')); // Event Tombol Analitik
       document.getElementById('closeSettings').addEventListener('click', () => closeModal('settingsBackdrop'));
       document.getElementById('closeAbout').addEventListener('click', () => closeModal('aboutBackdrop'));
-      document.getElementById('closePrivacy').addEventListener('click', () => closeModal('privacyBackdrop')); // Event Tutup Privasi
+      document.getElementById('closePrivacy').addEventListener('click', () => closeModal('privacyBackdrop'));
+      document.getElementById('closeAnalytics').addEventListener('click', () => closeModal('analyticsBackdrop')); // Event Tutup Analitik
       document.getElementById('closeHistory').addEventListener('click', () => closeModal('historyBackdrop'));
       
       document.querySelectorAll('.modal-backdrop').forEach(el => {
@@ -492,6 +539,70 @@
       searchHistory.addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase();
         renderHistory(query);
+      });
+
+      // ========================================
+      // DASHBOARD & REPORTING LOGIC (BARU)
+      // ========================================
+      let dashboardData = null;
+
+      async function loadDashboard() {
+        try {
+          const res = await fetch('/api/stats/dashboard');
+          dashboardData = await res.json();
+          if (dashboardData.success) {
+            document.getElementById('dashTotalUsers').textContent = dashboardData.totalUsers.toLocaleString('id-ID');
+            document.getElementById('dashTotalInteractions').textContent = dashboardData.totalInteractions.toLocaleString('id-ID');
+            renderChart('modelChart', dashboardData.modelStats);
+            renderChart('categoryChart', dashboardData.categoryStats);
+          }
+        } catch(e) { console.error('Dashboard load error:', e); }
+      }
+
+      function renderChart(containerId, dataObj) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+        const entries = Object.entries(dataObj).sort((a, b) => b[1] - a[1]);
+        const maxVal = entries.length > 0 ? entries[0][1] : 1;
+
+        entries.forEach(([key, val]) => {
+          const percentage = (val / maxVal) * 100;
+          const label = modelNames[key] || key.charAt(0).toUpperCase() + key.slice(1);
+          const row = document.createElement('div');
+          row.className = 'chart-row';
+          row.innerHTML = `
+            <div class="chart-label">${label}</div>
+            <div class="chart-bar-bg">
+              <div class="chart-bar-fill" style="width: ${percentage}%">${val}</div>
+            </div>
+          `;
+          container.appendChild(row);
+        });
+      }
+
+      document.getElementById('downloadReportBtn').addEventListener('click', () => {
+        if (!dashboardData) return showToast('Data belum dimuat');
+        let csv = 'Tipe,Metric,Jumlah\n';
+        csv += `Global,Total Pengunjung,${dashboardData.totalUsers}\n`;
+        csv += `Global,Total Interaksi,${dashboardData.totalInteractions}\n`;
+        
+        Object.entries(dashboardData.modelStats).forEach(([k, v]) => {
+          csv += `Model_AI,${modelNames[k] || k},${v}\n`;
+        });
+        Object.entries(dashboardData.categoryStats).forEach(([k, v]) => {
+          csv += `Kategori,${k},${v}\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('hidden', '');
+        a.setAttribute('href', url);
+        a.setAttribute('download', `ASM_AI_Laporan_${new Date().toLocaleDateString('id-ID')}.csv`);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showToast('Laporan berhasil diunduh!');
       });
 
       // ========================================
@@ -826,7 +937,6 @@
 
           const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
           
-          // Penanganan Error dari Rate Limiter Backend (Keamanan)
           if(response.status === 429) {
              const errData = await response.json();
              aiBubble.textContent = errData.error || '🚫 Terlalu banyak permintaan. Coba lagi nanti.';
@@ -871,7 +981,7 @@
                 currentChat.messages.push({ role: 'ai', content: 'Tidak ada respons.' });
               }
             }
-            logInteraction(selectedModel, interactionCategory); // Log to Supabase
+            logInteraction(selectedModel, interactionCategory);
           } else {
             aiBubble.textContent = 'Error: ' + (data.error || 'Terjadi kesalahan');
             currentChat.messages.push({ role: 'ai', content: 'Error: ' + data.error });
