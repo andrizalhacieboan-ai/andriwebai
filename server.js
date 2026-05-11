@@ -29,7 +29,7 @@ app.use(helmet({
 // Rate Limiter: Mencegah Spam & DDoS (Max 30 request per 1 menit per IP)
 const apiLimiter = rateLimit({
     windowMs: 60 * 1000, // 1 menit
-    max: 30,
+    max: 15,
     message: { success: false, error: 'Terlalu banyak permintaan. Coba lagi dalam beberapa saat.' },
     standardHeaders: true,
     legacyHeaders: false,
