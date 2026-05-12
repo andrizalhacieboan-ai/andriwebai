@@ -314,9 +314,10 @@ a {
   border: var(--border-thin);
   border-radius: var(--radius);
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.8rem; 
   box-shadow: var(--shadow-hard-sm);
 }
+
 
 .user-counter {
   flex: 1 1 100%;
