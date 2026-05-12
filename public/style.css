@@ -314,7 +314,7 @@ a {
   border: var(--border-thin);
   border-radius: var(--radius);
   font-weight: 700;
-  font-size: 0.8rem; 
+  font-size: 0.6rem; 
   box-shadow: var(--shadow-hard-sm);
 }
 
